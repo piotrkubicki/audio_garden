@@ -7,3 +7,4 @@ db = SQLAlchemy(app)
 
 # import all models
 from app.models.location import Location
+from app.models.transmitter import Transmitter
