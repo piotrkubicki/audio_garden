@@ -34,10 +34,6 @@ def logs(app):
     app.logger.setLevel(app.config['log_level'])
     app.logger.addHandler(file_handler)
 
-@app.route('/')
-def index():
-    return 'Hello world'
-
 if __name__ == '__main__':
     init(app)
     logs(app)
