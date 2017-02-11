@@ -4,12 +4,14 @@ import logging
 from logging.handlers import RotatingFileHandler
 from app import app
 
+from gevent.wsgi import WSGIServer
+
 def init(app):
     config = ConfigParser.ConfigParser()
 
     try:
 
-        config_location = 'app/var/development.cfg'                             # this dir and file is not included, change this to change configuration 
+        config_location = 'app/var/development.cfg'                             # this dir and file is not included, change this to change configuration
         config.read(config_location)
 
         # application config
@@ -37,4 +39,6 @@ def logs(app):
 if __name__ == '__main__':
     init(app)
     logs(app)
-    app.run(host=app.config['ip_address'], port=int(app.config['port']))
+    #app.run(host=app.config['ip_address'], port=int(app.config['port']))
+    http_server = WSGIServer(('', 5000), app)
+    http_server.serve_forever()
