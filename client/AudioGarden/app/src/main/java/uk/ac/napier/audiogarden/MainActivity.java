@@ -17,11 +17,6 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        SharedPreferences sharedPreferences = this.getPreferences(Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString("BASE_URL", BASE_URL);
-        editor.commit();
-
         btnAudioGarden = (Button) findViewById(R.id.btnAudioGarden);
         btnAudioGarden.setOnClickListener(new View.OnClickListener() {
             @Override
