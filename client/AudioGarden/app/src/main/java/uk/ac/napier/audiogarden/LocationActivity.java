@@ -23,47 +23,51 @@ import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Handler;
+import android.os.ParcelUuid;
 import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import static android.icu.lang.UCharacter.GraphemeClusterBreak.L;
-
 public class LocationActivity extends AppCompatActivity {
-    public Button btnStart1, btnStart2;
+
+    private Location location;
     private MediaPlayer bgMP, vMP;
-    //private BluetoothAdapter bluetoothAdapter;
-    //private Handler mHandler;
-    //private static final long SCAN_PERIOD = 10000;
-    //private BluetoothLeScanner mLEScanner;
-    //private ScanSettings scanSettings;
-    //private List<ScanFilter> scanFilters;
-    //private BluetoothGatt mGatt;
-    //private final int REQUEST_ENABLE_BT = 1;
-    private String beaconID = "0";
+    private SharedPreferences sharedPreferences;
+    private BluetoothAdapter bluetoothAdapter;
+    private BluetoothLeScanner mLEScanner;
+    private final int REQUEST_ENABLE_BT = 1;
+    private ScanSettings scanSettings;
 
     private final int FADE_DURATION = 5000;
     private final int FADE_INTERVAL = 250;
     private final int MAX_VOLUME = 1;
     private float volume = 0;
 
+    private List<String> scanFilters;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_location);
+        scanFilters = new ArrayList<>();
 
-        /*mHandler = new Handler();
         if (!getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
             Toast.makeText(this, "BLE Not Supported", Toast.LENGTH_SHORT).show();
             finish();
@@ -75,46 +79,17 @@ public class LocationActivity extends AppCompatActivity {
         if (bluetoothAdapter == null || !bluetoothAdapter.isEnabled()) {
             Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
             startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
-        }*/
+        }
 
-        btnStart1 = (Button) findViewById(R.id.btnStart1); // TO DELETE
-        btnStart2 = (Button) findViewById(R.id.btnStart2); // TO DELETE
 
         bgMP= new MediaPlayer();
         vMP = new MediaPlayer();
 
-        // TO DELETE
-        btnStart1.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // ignore beacon if last played or fade in or fade out not finished
-                if (beaconID != "1" && (volume <= 0 || volume >= 1)) {
-                    playTracks(bgMP, vMP, 1, 1);
-                    beaconID = "1";
-                }
-            }
-        });
-
-        // TO DELETE
-        btnStart2.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // ignore beacon if last played or fade in or fade out not finished
-                if (beaconID != "2" && (volume <= 0 || volume >= 1)) {
-                    playTracks(bgMP, vMP, 1, 2);
-                    beaconID = "2";
-                }
-            }
-        });
-
         bgMP.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
             public void onPrepared(MediaPlayer mp) {
-                Toast.makeText(getApplicationContext(), "BG Starting", Toast.LENGTH_SHORT).show();
-
                 mp.start();
                 fadeIn();
-
-                //vMP.prepareAsync();     // prepare voice media player
+                vMP.prepareAsync();     // prepare voice media player
             }
         });
 
@@ -132,11 +107,78 @@ public class LocationActivity extends AppCompatActivity {
                 }
             }
         });
+
+        vMP.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+
+            @Override
+            public void onCompletion(MediaPlayer mediaPlayer) {
+                mLEScanner.startScan(null, scanSettings, mScanCallback);
+            }
+        });
+
+        mLEScanner = BluetoothAdapter.getDefaultAdapter().getBluetoothLeScanner();
+        scanSettings = new ScanSettings.Builder().setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY).build();
+
+        setLocation();
+        setView();
+
+        mLEScanner.startScan(null, scanSettings, mScanCallback);
     }
 
+    private void setLocation() {
+        location = new Location();
+        sharedPreferences = getSharedPreferences(getString(R.string.locations_storage), Context.MODE_PRIVATE);
+        String locations = sharedPreferences.getString(getString(R.string.locations_storage), "0");
+        JSONObject jsonObject;
 
-    private void playTracks(MediaPlayer backgroundMP, MediaPlayer voiceMP, int locationID, int transmitterID) {
+        if (locations != null) {
+            try {
+                jsonObject = new JSONObject(locations);
+                Intent intent = getIntent();
+                int location_id = intent.getIntExtra("id", 0);
+                JSONArray jsonArray = jsonObject.getJSONArray("locations");
+                List<Double> position = new ArrayList<>();
+
+                for (int i = 0; i < jsonArray.length(); i++) {
+                    JSONObject temp_location = jsonArray.getJSONObject(i);
+
+                    if (temp_location.getInt("location_id") == location_id) {
+                        location.setId(location_id);
+                        location.setLocationName(temp_location.getString("name"));
+
+                        JSONObject cord = temp_location.getJSONObject("position");
+                        position.add(cord.getDouble("longitude"));
+                        position.add(cord.getDouble("latitude"));
+                        location.setPosition(position);
+
+                        JSONArray transmittersArray = temp_location.getJSONArray("transmitters");
+                        setTransmittersIds(transmittersArray);
+                    }
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+
+    }
+
+    private void setView() {
+        getSupportActionBar().setTitle(location.getLocationName());
+    }
+
+    private void setTransmittersIds(JSONArray jsonArray) throws JSONException {
+        List<String> locations = new ArrayList<>();
+
+        for (int i = 0; i < jsonArray.length(); i++) {
+            locations.add(jsonArray.getString(i));
+            scanFilters.add(jsonArray.getString(i));
+        }
+        location.setTransmittersIds(locations);
+    }
+
+    private void playTracks(MediaPlayer backgroundMP, MediaPlayer voiceMP, String locationID, String transmitterID) {
         String path = getString(R.string.base_url) + "locations/" + locationID + "/"+ transmitterID;
+        mLEScanner.stopScan(mScanCallback);
 
         try {
             // Request new sounds only if voice record is not playing
@@ -162,8 +204,6 @@ public class LocationActivity extends AppCompatActivity {
                 voiceMP.setAudioStreamType(AudioManager.STREAM_MUSIC);
 
                 backgroundMP.prepareAsync();
-            } else {
-                Toast.makeText(getApplicationContext(), "Voice is playing", Toast.LENGTH_SHORT).show();
             }
         }
         catch (IllegalArgumentException e) {
@@ -218,4 +258,36 @@ public class LocationActivity extends AppCompatActivity {
         volume += deltaVolume;
     }
 
+    private ScanCallback mScanCallback = new ScanCallback() {
+        @Override
+        public void onScanResult(int callbackType, ScanResult result) {
+            super.onScanResult(callbackType, result);
+
+            if( result == null || result.getDevice() == null || TextUtils.isEmpty(result.getDevice().getName()) )
+                return;
+
+            //String newId = result.getScanRecord().getServiceUuids().get(0).toString();
+            String newId = result.getDevice().getAddress().toString();
+
+            if (!scanFilters.contains(newId)) {
+                return;
+            }
+
+            if (volume <= 0 || volume >= 1) {
+                scanFilters.remove(newId); // remove currently played device from list
+                playTracks(bgMP, vMP, "1", newId);
+            }
+        }
+
+        @Override
+        public void onBatchScanResults(List<ScanResult> results) {
+            super.onBatchScanResults(results);
+        }
+
+        @Override
+        public void onScanFailed(int errorCode) {
+            Log.e( "BLE", "Discovery onScanFailed: " + errorCode );
+            super.onScanFailed(errorCode);
+        }
+    };
 }

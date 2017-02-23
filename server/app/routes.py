@@ -5,7 +5,7 @@ from flask import jsonify, send_file
 
 @app.route('/')
 def index():
-    return 'Hello world'
+    return ''
 
 @app.route('/locations', methods=['GET'])
 def get_locations():
@@ -28,7 +28,10 @@ def get_locations():
 
         locations_list.append(temp_location)
 
-    return jsonify(*locations_list)
+    loc = {}
+    loc['locations'] = locations_list
+
+    return jsonify(loc)
 
 @app.route('/locations/<location_id>/<transmitter_id>/background', methods=['GET'])
 def get_transmitter_bg_sound(location_id, transmitter_id):

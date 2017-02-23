@@ -2,12 +2,13 @@ from app import db
 
 class Transmitter(db.Model):
     __tablename__ = 'transmitters'
-    transmitter_id = db.Column(db.Integer, primary_key=True)
+    transmitter_id = db.Column(db.String(100), primary_key=True)
     background_track = db.Column(db.String(100), nullable=False)
     voice_track = db.Column(db.String(100), nullable=False)
     location_id = db.Column(db.Integer, db.ForeignKey('locations.location_id'))
 
     def __init__(self, transmitter_id, background_track, voice_track, location_id):
+        self.transmitter_id = transmitter_id
         self.background_track = background_track
         self.voice_track = voice_track
         self.location_id = location_id
