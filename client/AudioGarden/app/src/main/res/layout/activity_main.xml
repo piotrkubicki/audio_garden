@@ -20,20 +20,30 @@
         android:layout_centerHorizontal="true" />
 
     <Button
-        android:text="Button"
+        android:text="Help"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignBottom="@+id/btnAudioGarden"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="59dp"
-        android:id="@+id/button" />
+        android:id="@+id/btnHelp" />
 
     <Button
-        android:text="Button"
+        android:text="Settings"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="13dp"
-        android:id="@+id/button2"
+        android:id="@+id/btnSettings"
         android:layout_below="@+id/btnAudioGarden"
-        android:layout_alignStart="@+id/button" />
+        android:layout_alignStart="@+id/btnHelp"
+        />
+
+    <Button
+        android:text="Map"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="12dp"
+        android:id="@+id/btnMap"
+        android:layout_above="@+id/btnHelp"
+        android:layout_alignStart="@+id/btnHelp" />
 </RelativeLayout>

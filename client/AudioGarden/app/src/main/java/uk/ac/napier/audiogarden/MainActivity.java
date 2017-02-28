@@ -11,6 +11,9 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity {
     public static final String BASE_URL = "http://192.168.0.9:5000/";
     public Button btnAudioGarden;
+    public Button btnHelp;
+    public Button btnSettings;
+    public Button btnMap;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -22,6 +25,33 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(getApplicationContext(), LocationsActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        btnHelp = (Button) findViewById(R.id.btnHelp);
+        btnHelp.setOnClickListener(new View.OnClickListener() {
+           @Override
+           public void onClick(View view) {
+               Intent intent = new Intent(getApplicationContext(), HelpActivity.class);
+               startActivity(intent);
+           }
+        });
+
+        btnSettings = (Button) findViewById(R.id.btnSettings);
+        btnSettings.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getApplicationContext(), SettingsActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        btnMap = (Button) findViewById(R.id.btnMap);
+        btnMap.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getApplicationContext(), MapActivity.class);
                 startActivity(intent);
             }
         });
