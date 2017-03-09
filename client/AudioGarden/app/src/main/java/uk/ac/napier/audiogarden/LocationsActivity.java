@@ -39,13 +39,6 @@ public class LocationsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_locations);
         setupActionBar();
 
-        // get shared preferences and store data
-        /*SharedPreferences prefs = getSharedPreferences(getString(R.string.locations_storage), Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = prefs.edit();
-        String location = "000000000";
-        editor.putString("test", location);
-        editor.commit();*/
-
         new GetLocations().execute();
     }
 
@@ -82,8 +75,6 @@ public class LocationsActivity extends AppCompatActivity {
 
                 try {
                     connection.setRequestMethod("GET");
-                    //connection.setRequestProperty("Content-Type", "application/json");
-                    //connection.setDoInput(true);
 
                     BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream()));
                     StringBuilder result = new StringBuilder();
@@ -94,11 +85,9 @@ public class LocationsActivity extends AppCompatActivity {
                     }
 
                     br.close();
-                    //Boolean response = Boolean.parseBoolean(result.toString());
 
                     return result.toString();
-                }
-                finally {
+                } finally {
                     connection.disconnect();
                 }
             } catch (MalformedURLException e) {
@@ -107,13 +96,15 @@ public class LocationsActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
 
-
-
             return null;
         }
 
         @Override
         protected void onPostExecute(String response) {
+            if (response == null) {
+                Toast.makeText(getApplicationContext(), getString(R.string.server_error), Toast.LENGTH_SHORT).show();
+                return;
+            }
             try {
                 JSONObject jsonResponse = new JSONObject(response);
                 JSONArray jsonArray = jsonResponse.getJSONArray("locations");
@@ -152,7 +143,8 @@ public class LocationsActivity extends AppCompatActivity {
                     });
                 }
             } catch (JSONException e) {
-                e.printStackTrace();
+                return;
+                //e.printStackTrace();
             }
             // get shared preferences and store data
             SharedPreferences prefs = getSharedPreferences(getString(R.string.locations_storage), Context.MODE_PRIVATE);

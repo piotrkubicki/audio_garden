@@ -1,13 +1,13 @@
-from app import app
+from app import application
 from app import Location
 from app import Transmitter
 from flask import jsonify, send_file
 
-@app.route('/')
+@application.route('/')
 def index():
     return ''
 
-@app.route('/locations', methods=['GET'])
+@application.route('/locations', methods=['GET'])
 def get_locations():
     locations = Location.query.all()
     locations_list = []
@@ -33,7 +33,7 @@ def get_locations():
 
     return jsonify(loc)
 
-@app.route('/locations/<location_id>/<transmitter_id>/background', methods=['GET'])
+@application.route('/locations/<location_id>/<transmitter_id>/background', methods=['GET'])
 def get_transmitter_bg_sound(location_id, transmitter_id):
     base_path = 'static/audio/background/'
     transmitter = Transmitter.query.get(transmitter_id)
@@ -41,7 +41,7 @@ def get_transmitter_bg_sound(location_id, transmitter_id):
 
     return send_file(base_path + filename, mimetype='audio/mp3', as_attachment=True, attachment_filename=filename)
 
-@app.route('/locations/<location_id>/<transmitter_id>/voice', methods=['GET'])
+@application.route('/locations/<location_id>/<transmitter_id>/voice', methods=['GET'])
 def get_transmitter_voice_sound(location_id, transmitter_id):
     base_path = 'static/audio/voice/'
     transmitter = Transmitter.query.get(transmitter_id)
