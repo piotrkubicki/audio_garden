@@ -36,13 +36,6 @@ public class LocationsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_locations);
 
-        // get shared preferences and store data
-        /*SharedPreferences prefs = getSharedPreferences(getString(R.string.locations_storage), Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = prefs.edit();
-        String location = "000000000";
-        editor.putString("test", location);
-        editor.commit();*/
-
         new GetLocations().execute();
     }
 
@@ -57,8 +50,6 @@ public class LocationsActivity extends AppCompatActivity {
 
                 try {
                     connection.setRequestMethod("GET");
-                    //connection.setRequestProperty("Content-Type", "application/json");
-                    //connection.setDoInput(true);
 
                     BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream()));
                     StringBuilder result = new StringBuilder();
@@ -69,7 +60,6 @@ public class LocationsActivity extends AppCompatActivity {
                     }
 
                     br.close();
-                    //Boolean response = Boolean.parseBoolean(result.toString());
 
                     return result.toString();
                 }
@@ -81,8 +71,6 @@ public class LocationsActivity extends AppCompatActivity {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-
-
 
             return null;
         }

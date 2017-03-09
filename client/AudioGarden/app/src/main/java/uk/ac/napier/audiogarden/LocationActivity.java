@@ -263,7 +263,7 @@ public class LocationActivity extends AppCompatActivity {
         public void onScanResult(int callbackType, ScanResult result) {
             super.onScanResult(callbackType, result);
 
-            if( result == null || result.getDevice() == null || TextUtils.isEmpty(result.getDevice().getName()) )
+            if(result == null || result.getDevice() == null)
                 return;
 
             //String newId = result.getScanRecord().getServiceUuids().get(0).toString();
@@ -275,7 +275,7 @@ public class LocationActivity extends AppCompatActivity {
 
             if (volume <= 0 || volume >= 1) {
                 scanFilters.remove(newId); // remove currently played device from list
-                playTracks(bgMP, vMP, "1", newId);
+                playTracks(bgMP, vMP, Integer.toString(location.getId()), newId);
             }
         }
 

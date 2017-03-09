@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">AudioGarden</string>
     <string name="title_activity_location">LocationActivity</string>
-    <string name="base_url">http://192.168.0.9:5000/</string>
+    <string name="base_url">http://flask-env.cfczxq6qgm.eu-west-2.elasticbeanstalk.com/</string>
+    <!--<string name="base_url">http://192.168.0.9:5000/</string>-->
     <string name="locations_storage">locations_pref</string>
 </resources>
