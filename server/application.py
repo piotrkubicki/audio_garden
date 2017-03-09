@@ -4,8 +4,6 @@ import logging
 from logging.handlers import RotatingFileHandler
 from app import application
 
-#from gevent.wsgi import WSGIServer
-
 def init(application):
     config = ConfigParser.ConfigParser()
 
@@ -30,7 +28,7 @@ def init(application):
 def logs(application):
     log_pathname = application.config['log_location'] + application.config['log_file']
     file_handler = RotatingFileHandler(log_pathname, maxBytes = 1024 * 1024 * 10, backupCount = 1024)
-    file_handler.setLevel(app.config['log_level'])
+    file_handler.setLevel(application.config['log_level'])
     formatter = logging.Formatter('%(levelname)s | %(asctime)s | %(module)s | %(funcName)s | %(message)s')
     file_handler.setFormatter(formatter)
     application.logger.setLevel(application.config['log_level'])
@@ -40,8 +38,4 @@ if __name__ == '__main__':
     init(application)
     logs(application)
     application.debug = True
-    application.run()
-
-#    application.run(host=application.config['ip_address'], port=int(application.config['port']))
-#    http_server = WSGIServer(('', 5000), app)
-#    http_server.serve_forever()
+    application.run(host='0.0.0.0', port=5000)
