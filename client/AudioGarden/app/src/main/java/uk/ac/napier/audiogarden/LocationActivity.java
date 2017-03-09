@@ -68,19 +68,8 @@ public class LocationActivity extends AppCompatActivity {
         setContentView(R.layout.activity_location);
         scanFilters = new ArrayList<>();
 
-        if (!getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
-            Toast.makeText(this, "BLE Not Supported", Toast.LENGTH_SHORT).show();
-            finish();
-        }
-
         final BluetoothManager bluetoothManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
         bluetoothAdapter = bluetoothManager.getAdapter();
-
-        if (bluetoothAdapter == null || !bluetoothAdapter.isEnabled()) {
-            Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-            startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
-        }
-
 
         bgMP= new MediaPlayer();
         vMP = new MediaPlayer();
@@ -103,7 +92,6 @@ public class LocationActivity extends AppCompatActivity {
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
-
                 }
             }
         });
@@ -116,13 +104,31 @@ public class LocationActivity extends AppCompatActivity {
             }
         });
 
-        mLEScanner = BluetoothAdapter.getDefaultAdapter().getBluetoothLeScanner();
-        scanSettings = new ScanSettings.Builder().setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY).build();
-
         setLocation();
         setView();
 
-        mLEScanner.startScan(null, scanSettings, mScanCallback);
+        checkBluetoothState(); // check if bluetooth available
+    }
+
+    private void checkBluetoothState() {
+        if (!getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
+            Toast.makeText(this, "BLE Not Supported", Toast.LENGTH_SHORT).show();
+            finish();
+        } else if (bluetoothAdapter == null || !bluetoothAdapter.isEnabled()) {
+            Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+            startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
+        } else {
+            mLEScanner = BluetoothAdapter.getDefaultAdapter().getBluetoothLeScanner();
+            scanSettings = new ScanSettings.Builder().setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY).build();
+            mLEScanner.startScan(null, scanSettings, mScanCallback);
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == REQUEST_ENABLE_BT) {
+            checkBluetoothState();
+        }
     }
 
     private void setLocation() {
