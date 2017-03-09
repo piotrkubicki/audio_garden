@@ -9,8 +9,15 @@
     tools:context="uk.ac.napier.audiogarden.HelpActivity$PlaceholderFragment">
 
     <TextView
-        android:id="@+id/section_label"
+        android:id="@+id/section_header"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
-
+        android:layout_height="wrap_content"
+        android:textStyle="bold"
+        android:textSize="40sp"/>
+    <TextView
+        android:id="@+id/section_main"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="30sp"
+        android:layout_below="@+id/section_header"/>
 </RelativeLayout>

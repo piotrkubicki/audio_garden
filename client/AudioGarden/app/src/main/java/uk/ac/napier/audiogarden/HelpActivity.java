@@ -107,8 +107,24 @@ public class HelpActivity extends AppCompatActivity {
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
             View rootView = inflater.inflate(R.layout.fragment_help, container, false);
-            TextView textView = (TextView) rootView.findViewById(R.id.section_label);
-            textView.setText(getString(R.string.section_format, getArguments().getInt(ARG_SECTION_NUMBER)));
+            TextView headerTextView = (TextView) rootView.findViewById(R.id.section_header);
+            TextView mainTextView = (TextView) rootView.findViewById(R.id.section_main);
+            switch (getArguments().getInt(ARG_SECTION_NUMBER))
+            {
+                case 1: headerTextView.setText(getString(R.string.volumeHeader));
+                        mainTextView.setText(getString(R.string.volumeMain));
+                        break;
+                case 2: headerTextView.setText(getString(R.string.bluetoothHeader));
+                        mainTextView.setText(getString(R.string.bluetoothMain));
+                        break;
+                case 3: headerTextView.setText(getString(R.string.beaconHeader));
+                        mainTextView.setText(getString(R.string.beaconMain));
+                        break;
+                case 4: headerTextView.setText(getString(R.string.stuckHeader));
+                        mainTextView.setText(getString(R.string.stuckMain));
+                        break;
+            }
+
             return rootView;
         }
     }
@@ -132,8 +148,8 @@ public class HelpActivity extends AppCompatActivity {
 
         @Override
         public int getCount() {
-            // Show 3 total pages.
-            return 3;
+            // Show 4 total pages.
+            return 4;
         }
 
         @Override

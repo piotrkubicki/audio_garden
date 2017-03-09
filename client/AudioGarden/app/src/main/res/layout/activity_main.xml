@@ -1,49 +1,127 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/activity_main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
+    android:stretchColumns="1"
+    android:orientation="vertical"
     tools:context="uk.ac.napier.audiogarden.MainActivity">
+    <!-- New Row -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:gravity="center">
 
-    <Button
-        android:text="Audio Garden"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="185dp"
-        android:id="@+id/btnAudioGarden"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true" />
+        <!-- Map Button -->
+        <RelativeLayout
+            android:id="@+id/btnMap"
+            android:clickable="true"
+            android:background="@color/orange"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center">
+            <ImageView
+                android:id="@+id/mapImage"
+                android:src="@drawable/ic_map"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"/>
+            <TextView
+                android:text="@string/txtMap"
+                android:textStyle="bold"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/txtMap"
+                android:gravity="center"
+                android:layout_below="@+id/mapImage"/>
+        </RelativeLayout>
 
-    <Button
-        android:text="Help"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/btnAudioGarden"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="59dp"
-        android:id="@+id/btnHelp" />
+        <!-- Garden Button -->
+        <RelativeLayout
+            android:id="@+id/btnGarden"
+            android:clickable="true"
+            android:background="@color/blue"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center">
+            <ImageView
+                android:id="@+id/gardenImage"
+                android:src="@drawable/ic_garden"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"/>
+            <TextView
+                android:text="@string/txtGarden"
+                android:textStyle="bold"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/txtAudioGarden"
+                android:gravity="center"
+                android:layout_below="@+id/gardenImage"/>
 
-    <Button
-        android:text="Settings"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="13dp"
-        android:id="@+id/btnSettings"
-        android:layout_below="@+id/btnAudioGarden"
-        android:layout_alignStart="@+id/btnHelp"
-        />
+        </RelativeLayout>
+    </LinearLayout>
 
-    <Button
-        android:text="Map"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="12dp"
-        android:id="@+id/btnMap"
-        android:layout_above="@+id/btnHelp"
-        android:layout_alignStart="@+id/btnHelp" />
-</RelativeLayout>
+    <!-- New Row -->
+    <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:gravity="center">
+
+        <!-- Settings Button -->
+        <RelativeLayout
+            android:id="@+id/btnSettings"
+            android:clickable="true"
+            android:background="@color/green"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center">
+            <ImageView
+                android:id="@+id/settingsImage"
+                android:src="@drawable/ic_settings"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"/>
+            <TextView
+                android:text="@string/txtSettings"
+                android:textStyle="bold"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/txtSettings"
+                android:gravity="center"
+                android:layout_below="@+id/settingsImage"/>
+        </RelativeLayout>
+
+        <!-- Help Button -->
+        <RelativeLayout
+            android:id="@+id/btnHelp"
+            android:clickable="true"
+            android:background="@color/yellow"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center">
+            <ImageView
+                android:id="@+id/helpImage"
+                android:src="@drawable/ic_help"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"/>
+            <TextView
+                android:text="@string/txtHelp"
+                android:textStyle="bold"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/txtHelp"
+                android:gravity="center"
+                android:layout_below="@+id/helpImage"/>
+        </RelativeLayout>
+    </LinearLayout>
+</LinearLayout>
