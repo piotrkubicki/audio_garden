@@ -38,8 +38,7 @@ public class LocationsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_locations);
         setupActionBar();
-
-        new GetLocations().execute();
+        makeButtons();
     }
 
     /**
@@ -64,94 +63,48 @@ public class LocationsActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    private  class GetLocations extends AsyncTask<String, Void, String> {
+    public void makeButtons() {
+        // make buttons for all locations
+        SharedPreferences prefs = getSharedPreferences(getString(R.string.locations_storage), Context.MODE_PRIVATE);
+        try {
+            JSONObject jsonResponse = new JSONObject(prefs.getString(getString(R.string.locations_storage), ""));
 
-        @Override
-        protected String doInBackground(String... strings) {
-            URL url = null;
-            try {
-                url = new URL(getString(R.string.base_url) + "locations");
-                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            JSONArray jsonArray = jsonResponse.getJSONArray("locations");
+            for (int i = 0; i < jsonArray.length(); i++) {
+                JSONObject obj = jsonArray.getJSONObject(i);
 
-                try {
-                    connection.setRequestMethod("GET");
+                Button button = new Button(getApplicationContext());
+                button.setText(obj.getString("name"));
+                RelativeLayout rl = (RelativeLayout)findViewById(R.id.activity_locations);
+                RelativeLayout.LayoutParams lParams = new RelativeLayout.LayoutParams(
+                        RelativeLayout.LayoutParams.WRAP_CONTENT,
+                        RelativeLayout.LayoutParams.WRAP_CONTENT);
 
-                    BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-                    StringBuilder result = new StringBuilder();
-                    String line;
-
-                    while ((line = br.readLine()) != null) {
-                        result.append(line);
-                    }
-
-                    br.close();
-
-                    return result.toString();
-                } finally {
-                    connection.disconnect();
+                if (i > 0) {
+                    lParams.addRule(RelativeLayout.BELOW, i);
                 }
-            } catch (MalformedURLException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+                lParams.addRule(RelativeLayout.CENTER_HORIZONTAL);
 
-            return null;
-        }
+                button.setLayoutParams(lParams);
+                button.setId(i + 1);
 
-        @Override
-        protected void onPostExecute(String response) {
-            if (response == null) {
-                Toast.makeText(getApplicationContext(), getString(R.string.server_error), Toast.LENGTH_SHORT).show();
-                return;
-            }
-            try {
-                JSONObject jsonResponse = new JSONObject(response);
-                JSONArray jsonArray = jsonResponse.getJSONArray("locations");
+                rl.addView(button);
 
-                // make buttons for all locations
-                for (int i = 0; i < jsonArray.length(); i++) {
+                final int location_id = obj.getInt("location_id");
 
-                    JSONObject obj = jsonArray.getJSONObject(i);
-
-                    Button button = new Button(getApplicationContext());
-                    button.setText(obj.getString("name"));
-                    RelativeLayout rl = (RelativeLayout)findViewById(R.id.activity_locations);
-                    RelativeLayout.LayoutParams lParams = new RelativeLayout.LayoutParams(
-                            RelativeLayout.LayoutParams.WRAP_CONTENT,
-                            RelativeLayout.LayoutParams.WRAP_CONTENT);
-
-                    if (i > 0) {
-                        lParams.addRule(RelativeLayout.BELOW, i);
+                button.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Intent intent = new Intent(getApplicationContext(), LocationActivity.class);
+                        intent.putExtra("id", location_id);
+                        startActivity(intent);
                     }
-                    lParams.addRule(RelativeLayout.CENTER_HORIZONTAL);
-
-                    button.setLayoutParams(lParams);
-                    button.setId(i + 1);
-
-                    rl.addView(button);
-
-                    final int location_id = obj.getInt("location_id");
-
-                    button.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            Intent intent = new Intent(getApplicationContext(), LocationActivity.class);
-                            intent.putExtra("id", location_id);
-                            startActivity(intent);
-                        }
-                    });
-                }
-            } catch (JSONException e) {
-                return;
-                //e.printStackTrace();
+                });
             }
-            // get shared preferences and store data
-            SharedPreferences prefs = getSharedPreferences(getString(R.string.locations_storage), Context.MODE_PRIVATE);
-            SharedPreferences.Editor editor = prefs.edit();
-            editor.putString(getString(R.string.locations_storage), response);
-            editor.commit();
-
+        } catch (JSONException e) {
+            Toast.makeText(getApplicationContext(), "Locations data cannot be found!", Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+            startActivity(intent);
         }
     }
 }
