@@ -1,9 +1,12 @@
 package uk.ac.napier.audiogarden;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.Toast;
@@ -27,10 +30,6 @@ public class SplashActivity extends AppCompatActivity {
 
 
         new SplashActivity.GetLocations().execute();
-
-        Intent intent = new Intent(this, MainActivity.class);
-        startActivity(intent);
-        finish();
     }
 
     private  class GetLocations extends AsyncTask<String, Void, String> {
@@ -72,14 +71,17 @@ public class SplashActivity extends AppCompatActivity {
         protected void onPostExecute(String response) {
             if (response == null) {
                 Toast.makeText(getApplicationContext(), getString(R.string.server_error), Toast.LENGTH_SHORT).show();
-                return;
+            } else {
+                // get shared preferences and store data
+                SharedPreferences prefs = getSharedPreferences(getString(R.string.locations_storage), Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor = prefs.edit();
+                editor.putString(getString(R.string.locations_storage), response);
+                editor.commit();
             }
 
-            // get shared preferences and store data
-            SharedPreferences prefs = getSharedPreferences(getString(R.string.locations_storage), Context.MODE_PRIVATE);
-            SharedPreferences.Editor editor = prefs.edit();
-            editor.putString(getString(R.string.locations_storage), response);
-            editor.commit();
+            Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+            startActivity(intent);
+            finish();
         }
     }
 }

@@ -40,8 +40,12 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -59,14 +63,20 @@ public class LocationActivity extends AppCompatActivity {
     private final int FADE_INTERVAL = 250;
     private final int MAX_VOLUME = 1;
     private float volume = 0;
+    private Double maxDistance = -70.0;
 
     private List<String> scanFilters;
+    private Map<String, List<Double>> noiseFilter;
+
+    private int voicePosition;
+    private int bgPosition;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_location);
         scanFilters = new ArrayList<>();
+        noiseFilter = new HashMap<String, List<Double>>();
 
         final BluetoothManager bluetoothManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
         bluetoothAdapter = bluetoothManager.getAdapter();
@@ -177,7 +187,9 @@ public class LocationActivity extends AppCompatActivity {
 
         for (int i = 0; i < jsonArray.length(); i++) {
             locations.add(jsonArray.getString(i));
-            scanFilters.add(jsonArray.getString(i));
+            scanFilters.add(jsonArray.getString(i)); // set transmitters ids
+            noiseFilter.put(jsonArray.getString(i), new ArrayList<Double>());   // initialise noise filter with transmitters ids(key) and empty arrays of double
+                                                                                // arrays will store distance samples for every transmitters
         }
         location.setTransmittersIds(locations);
     }
@@ -268,20 +280,25 @@ public class LocationActivity extends AppCompatActivity {
         @Override
         public void onScanResult(int callbackType, ScanResult result) {
             super.onScanResult(callbackType, result);
-
             if(result == null || result.getDevice() == null)
                 return;
 
             //String newId = result.getScanRecord().getServiceUuids().get(0).toString();
             String newId = result.getDevice().getAddress().toString();
 
+            // validate device id
             if (!scanFilters.contains(newId)) {
                 return;
             }
 
-            if (volume <= 0 || volume >= 1) {
-                scanFilters.remove(newId); // remove currently played device from list
-                playTracks(bgMP, vMP, Integer.toString(location.getId()), newId);
+            boolean inRange = calculateDistance(result.getScanRecord().getTxPowerLevel(), result.getRssi(), newId);
+
+            if (inRange) {
+                if (volume <= 0 || volume >= 1) {
+                    scanFilters.remove(newId); // remove currently played device from list
+                    resetNoiseFilter();
+                    playTracks(bgMP, vMP, Integer.toString(location.getId()), newId);
+                }
             }
         }
 
@@ -296,4 +313,82 @@ public class LocationActivity extends AppCompatActivity {
             super.onScanFailed(errorCode);
         }
     };
+
+    private boolean calculateDistance(float txPower, double rssi, String transmitterId) {
+        double distance = 0;
+
+        if (rssi == 0) {
+            return false;
+        }
+
+//        double ratio = rssi * 1.0 / txPower;
+//
+//        if (ratio < 1.0) {
+//            distance = Math.pow(ratio, 10);
+//        } else {
+//             distance = (0.89976) * Math.pow(ratio, 7.7095) + 0.111;
+//        }
+
+        noiseFilter.get(transmitterId).add(rssi);
+        List<Double> samples = noiseFilter.get(transmitterId);
+
+        if (samples.size() == 10) {
+            double sum = 0;
+            for (Double sample : samples) {
+                sum += sample;
+            }
+
+            double resDistance = sum / samples.size();
+            Toast.makeText(getApplicationContext(), Double.toString(resDistance), Toast.LENGTH_SHORT).show();
+            noiseFilter.get(transmitterId).clear();
+            Log.e("distance", Double.toString(resDistance));
+            return resDistance > maxDistance;
+        }
+
+        return false;
+    }
+
+    // remove distance samples for each transmitter
+    private void resetNoiseFilter() {
+        Iterator it = noiseFilter.entrySet().iterator();
+
+        while (it.hasNext()) {
+            Map.Entry pair = (Map.Entry)it.next();
+            pair.setValue(new ArrayList<Double>());
+            it.remove();
+        }
+    }
+
+    private void pauseSounds() {
+        vMP.pause();
+        bgMP.pause();
+
+        voicePosition = vMP.getCurrentPosition();
+        bgPosition = bgMP.getCurrentPosition();
+    }
+
+    private void resumeSounds() {
+        bgMP.seekTo(bgPosition);
+        vMP.seekTo(voicePosition);
+
+        bgMP.start();
+        vMP.start();
+    }
+
+    private void stopSounds() {
+        vMP.stop();
+        bgMP.stop();
+    }
+
+    private void rePlaySounds() {
+        bgMP.seekTo(0);
+        vMP.seekTo(0);
+
+        bgMP.start();
+        vMP.start();
+    }
+
+    private void restartLocation() {
+        setLocation();
+    }
 }

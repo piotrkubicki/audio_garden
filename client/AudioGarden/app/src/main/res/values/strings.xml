@@ -2,7 +2,7 @@
 
     <string name="app_name">Audio Garden</string>
     <string name="title_activity_location">LocationActivity</string>
-    <string name="base_url">http://192.168.0.26:5000/</string>
+    <string name="base_url">http://audiogarden.t6iqccz7ds.eu-west-2.elasticbeanstalk.com/</string>
     <string name="locations_storage">locations_pref</string>
     <string name="title_activity_help">Help</string>
     <string name="action_settings">Settings</string>
@@ -11,7 +11,7 @@
     <!-- Strings related to Main -->
     <string name="txtMap">Map</string>
     <string name="descriptionMap">Small map icon to represent the map page</string>
-    <string name="txtGarden">Audio Garden</string>
+    <string name="txtGarden">Audio Guide</string>
     <string name="descriptionGarden">Small flower icon to represent the garden page</string>
     <string name="txtHelp">Help</string>
     <string name="descriptionHelp">Small question mark icon to represent the help page</string>
