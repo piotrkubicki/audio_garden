@@ -59,14 +59,14 @@ public class LocationActivity extends AppCompatActivity {
     private final int REQUEST_ENABLE_BT = 1;
     private ScanSettings scanSettings;
 
-    private final int FADE_DURATION = 5000;
+    private final int FADE_DURATION = 5000;         // duration of fade effects
     private final int FADE_INTERVAL = 250;
     private final int MAX_VOLUME = 1;
     private float volume = 0;
-    private Double maxDistance = -70.0;
+    private Double maxDistance = -62.0;             // distance read that trigger server audio stream requests
 
-    private List<String> scanFilters;
-    private Map<String, List<Double>> noiseFilter;
+    private List<String> scanFilters;               // list of valid devices
+    private Map<String, List<Double>> noiseFilter;  // stores distance samples of each valid device
 
     private int voicePosition;
     private int bgPosition;
@@ -137,7 +137,12 @@ public class LocationActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_ENABLE_BT) {
-            checkBluetoothState();
+            if (resultCode == 0) {
+                Intent intent = new Intent(getApplicationContext(), LocationsActivity.class);
+                startActivity(intent);
+            } else {
+                checkBluetoothState();
+            }
         }
     }
 
