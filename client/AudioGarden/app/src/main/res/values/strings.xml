@@ -10,8 +10,8 @@
     <!-- Strings related to Main -->
     <string name="txtMap">Map</string>
     <string name="descriptionMap">Small map icon to represent the map page</string>
-    <string name="txtGarden">Audio Garden</string>
-    <string name="descriptionGarden">Small flower icon to represent the garden page</string>
+    <string name="txtLocations">Locations</string>
+    <string name="descriptionLocations">Small </string>
     <string name="txtHelp">Help</string>
     <string name="descriptionHelp">Small question mark icon to represent the help page</string>
     <string name="txtSettings">Settings</string>
