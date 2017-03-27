@@ -1,7 +1,8 @@
 <resources>
+
     <string name="app_name">Audio Garden</string>
-    <string name="title_activity_location">Location</string>
-    <string name="base_url">http://192.168.56.1:5000/</string>
+    <string name="title_activity_location">LocationActivity</string>
+    <string name="base_url">http://audiogarden.t6iqccz7ds.eu-west-2.elasticbeanstalk.com/</string>
     <string name="locations_storage">locations_pref</string>
     <string name="title_activity_help">Help</string>
     <string name="action_settings">Settings</string>
@@ -104,4 +105,7 @@
 
     <string name="pref_title_vibrate">Vibrate</string>
     <string name="title_activity_maps">Map</string>
+
+    <!-- Errors messeges -->
+    <string name="server_error">Cannot connect with the server</string>
 </resources>
