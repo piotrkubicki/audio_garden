@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">Audio Garden</string>
     <string name="title_activity_location">Location</string>
-    <string name="base_url">http://192.168.0.9:5000/</string>
+    <string name="base_url">http://192.168.56.1:5000/</string>
     <string name="locations_storage">locations_pref</string>
     <string name="title_activity_help">Help</string>
     <string name="action_settings">Settings</string>
