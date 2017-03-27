@@ -1,10 +1,13 @@
 package uk.ac.napier.audiogarden;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 import android.provider.SyncStateContract;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -39,6 +42,10 @@ public class LocationsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_locations);
         setupActionBar();
         makeButtons();
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED)
+        {
+            Toast.makeText(getApplicationContext(), "App requires location permissions, please enable these in settings", Toast.LENGTH_LONG).show();
+        }
     }
 
     /**
@@ -77,7 +84,7 @@ public class LocationsActivity extends AppCompatActivity {
                 button.setText(obj.getString("name"));
                 RelativeLayout rl = (RelativeLayout)findViewById(R.id.activity_locations);
                 RelativeLayout.LayoutParams lParams = new RelativeLayout.LayoutParams(
-                        RelativeLayout.LayoutParams.WRAP_CONTENT,
+                        RelativeLayout.LayoutParams.MATCH_PARENT,
                         RelativeLayout.LayoutParams.WRAP_CONTENT);
 
                 if (i > 0) {
@@ -87,6 +94,7 @@ public class LocationsActivity extends AppCompatActivity {
 
                 button.setLayoutParams(lParams);
                 button.setId(i + 1);
+                button.setBackgroundResource(R.drawable.buttonstyle);
 
                 rl.addView(button);
 

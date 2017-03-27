@@ -1,8 +1,9 @@
 <resources>
 
     <string name="app_name">Audio Garden</string>
-    <string name="title_activity_location">LocationActivity</string>
+    <string name="title_activity_location">Location Activity</string>
     <string name="base_url">http://audiogarden.t6iqccz7ds.eu-west-2.elasticbeanstalk.com/</string>
+    <string name="title_activity_map">Map</string>
     <string name="locations_storage">locations_pref</string>
     <string name="title_activity_help">Help</string>
     <string name="action_settings">Settings</string>
@@ -25,13 +26,18 @@
     <string name="volumeMain">Using the volume buttons on your device, turn the media volume to a comfortable level for listening to music.</string>
 
     <string name="bluetoothHeader">Switch on Bluetooth</string>
-    <string name="bluetoothMain">In your device settings, turn on your devices Bluetooth. This allows the phone to communicate with the beacons in the garden.</string>
+    <string name="bluetoothMain">In your device settings, turn on your devices Bluetooth. This allows the phone to communicate with the beacons in the garden. (Note that the app will attempt to activate your bluetooth automatically if it is off)</string>
 
     <string name="beaconHeader">Find a beacon</string>
-    <string name="beaconMain">Go back to the main menu and select the map tab to find your way to the garden.</string>
+    <string name="beaconMain">Go back to the main menu and select the map tab to find your way to one of the locations. Once you\'re there go to the locations tab and select where you are. The app will start playing music once a beacon has been scanned.</string>
 
     <string name="stuckHeader">Still stuck?</string>
     <string name="stuckMain">If you\'re still having trouble there could be something wrong with the app. Please send an email with details of the problem to \n40170722@live.napier.ac.uk</string>
+
+    <!-- Strings related to Location -->
+    <string name="strSearching">Searching for beacons&#8230;</string>
+    <string name="strFound">Beacon found! Playing&#8230;</string>
+
 
     <!-- Strings related to Settings -->
 

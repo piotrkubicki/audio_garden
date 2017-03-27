@@ -1,5 +1,6 @@
 package uk.ac.napier.audiogarden;
 
+import android.Manifest;
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -18,6 +19,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.location.LocationManager;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
@@ -25,12 +27,15 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.ParcelUuid;
 import android.provider.MediaStore;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
@@ -111,12 +116,12 @@ public class LocationActivity extends AppCompatActivity {
             @Override
             public void onCompletion(MediaPlayer mediaPlayer) {
                 mLEScanner.startScan(null, scanSettings, mScanCallback);
+                resetScanner();
             }
         });
 
         setLocation();
         setView();
-
         checkBluetoothState(); // check if bluetooth available
     }
 
@@ -131,6 +136,7 @@ public class LocationActivity extends AppCompatActivity {
             mLEScanner = BluetoothAdapter.getDefaultAdapter().getBluetoothLeScanner();
             scanSettings = new ScanSettings.Builder().setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY).build();
             mLEScanner.startScan(null, scanSettings, mScanCallback);
+            resetScanner();
         }
     }
 
@@ -282,12 +288,15 @@ public class LocationActivity extends AppCompatActivity {
             super.onScanResult(callbackType, result);
             if(result == null || result.getDevice() == null)
                 return;
-
+            findViewById(R.id.scanning).setVisibility(View.INVISIBLE);
+            TextView text = (TextView) findViewById(R.id.scanText);
+            text.setText(R.string.strFound);
             //String newId = result.getScanRecord().getServiceUuids().get(0).toString();
             String newId = result.getDevice().getAddress().toString();
 
             // validate device id
             if (!scanFilters.contains(newId)) {
+                resetScanner();
                 return;
             }
 
@@ -302,6 +311,7 @@ public class LocationActivity extends AppCompatActivity {
             }
         }
 
+
         @Override
         public void onBatchScanResults(List<ScanResult> results) {
             super.onBatchScanResults(results);
@@ -313,6 +323,12 @@ public class LocationActivity extends AppCompatActivity {
             super.onScanFailed(errorCode);
         }
     };
+
+    public void resetScanner() {
+        findViewById(R.id.scanning).setVisibility(View.VISIBLE);
+        TextView text = (TextView) findViewById(R.id.scanText);
+        text.setText(R.string.strSearching);
+    }
 
     private boolean calculateDistance(float txPower, double rssi, String transmitterId) {
         double distance = 0;
