@@ -1,6 +1,9 @@
 package uk.ac.napier.audiogarden;
 
 import android.Manifest;
+import android.animation.Animator;
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -34,10 +37,14 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
+import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
+
+import com.skyfishjy.library.RippleBackground;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -75,6 +82,9 @@ public class LocationActivity extends AppCompatActivity {
 
     private int voicePosition;
     private int bgPosition;
+
+    private ImageView foundDevice;
+    private ImageView scanning;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -116,12 +126,13 @@ public class LocationActivity extends AppCompatActivity {
             @Override
             public void onCompletion(MediaPlayer mediaPlayer) {
                 mLEScanner.startScan(null, scanSettings, mScanCallback);
-                resetScanner();
+                startAnimation();
             }
         });
 
         setLocation();
         setView();
+        startAnimation();
         checkBluetoothState(); // check if bluetooth available
     }
 
@@ -136,7 +147,6 @@ public class LocationActivity extends AppCompatActivity {
             mLEScanner = BluetoothAdapter.getDefaultAdapter().getBluetoothLeScanner();
             scanSettings = new ScanSettings.Builder().setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY).build();
             mLEScanner.startScan(null, scanSettings, mScanCallback);
-            resetScanner();
         }
     }
 
@@ -288,15 +298,12 @@ public class LocationActivity extends AppCompatActivity {
             super.onScanResult(callbackType, result);
             if(result == null || result.getDevice() == null)
                 return;
-            findViewById(R.id.scanning).setVisibility(View.INVISIBLE);
-            TextView text = (TextView) findViewById(R.id.scanText);
-            text.setText(R.string.strFound);
+
             //String newId = result.getScanRecord().getServiceUuids().get(0).toString();
             String newId = result.getDevice().getAddress().toString();
 
             // validate device id
             if (!scanFilters.contains(newId)) {
-                resetScanner();
                 return;
             }
 
@@ -305,6 +312,7 @@ public class LocationActivity extends AppCompatActivity {
             if (inRange) {
                 if (volume <= 0 || volume >= 1) {
                     scanFilters.remove(newId); // remove currently played device from list
+                    stopAnimation();
                     resetNoiseFilter();
                     playTracks(bgMP, vMP, Integer.toString(location.getId()), newId);
                 }
@@ -324,11 +332,58 @@ public class LocationActivity extends AppCompatActivity {
         }
     };
 
-    public void resetScanner() {
-        findViewById(R.id.scanning).setVisibility(View.VISIBLE);
+    //start ripple animation
+    public void startAnimation() {
+        final RippleBackground rippleBackground=(RippleBackground)findViewById(R.id.scanning);
+        scanning();
+        rippleBackground.startRippleAnimation();
         TextView text = (TextView) findViewById(R.id.scanText);
         text.setText(R.string.strSearching);
     }
+
+    //stop ripple animation
+    public void stopAnimation() {
+        final RippleBackground rippleBackground=(RippleBackground)findViewById(R.id.scanning);
+        foundDevice();
+        rippleBackground.stopRippleAnimation();
+        TextView text = (TextView) findViewById(R.id.scanText);
+        text.setText(R.string.strFound);
+    }
+
+    //set centre image to bluetooth found with pop animation
+    private void foundDevice(){
+        AnimatorSet animatorSet = new AnimatorSet();
+        animatorSet.setDuration(400);
+        animatorSet.setInterpolator(new AccelerateDecelerateInterpolator());
+        ArrayList<Animator> animatorList=new ArrayList<Animator>();
+        ObjectAnimator scaleXAnimator = ObjectAnimator.ofFloat(foundDevice, "ScaleX", 0f, 1.2f, 1f);
+        animatorList.add(scaleXAnimator);
+        ObjectAnimator scaleYAnimator = ObjectAnimator.ofFloat(foundDevice, "ScaleY", 0f, 1.2f, 1f);
+        animatorList.add(scaleYAnimator);
+        animatorSet.playTogether(animatorList);
+        foundDevice.setVisibility(View.VISIBLE);
+        scanning.setVisibility(View.INVISIBLE);
+        animatorSet.start();
+    }
+
+    //set centre image to bluetooth scanning with pop animation
+    private void scanning(){
+        foundDevice=(ImageView)findViewById(R.id.foundDevice);
+        scanning=(ImageView)findViewById(R.id.centerImage);
+        AnimatorSet animatorSet = new AnimatorSet();
+        animatorSet.setDuration(400);
+        animatorSet.setInterpolator(new AccelerateDecelerateInterpolator());
+        ArrayList<Animator> animatorList=new ArrayList<Animator>();
+        ObjectAnimator scaleXAnimator = ObjectAnimator.ofFloat(scanning, "ScaleX", 0f, 1.2f, 1f);
+        animatorList.add(scaleXAnimator);
+        ObjectAnimator scaleYAnimator = ObjectAnimator.ofFloat(scanning, "ScaleY", 0f, 1.2f, 1f);
+        animatorList.add(scaleYAnimator);
+        animatorSet.playTogether(animatorList);
+        scanning.setVisibility(View.VISIBLE);
+        foundDevice.setVisibility(View.INVISIBLE);
+        animatorSet.start();
+    }
+
 
     private boolean calculateDistance(float txPower, double rssi, String transmitterId) {
         double distance = 0;

@@ -103,10 +103,10 @@ public class MapActivity extends AppCompatActivity {
         LatLngBounds bounds = builder.build();
         int width = getResources().getDisplayMetrics().widthPixels;
         int height = getResources().getDisplayMetrics().heightPixels;
-        int padding = (int) (width * 0.20); // offset from edges of the map 20% of screen
+        int padding = (int) (width * 0.10); // offset from edges of the map 10% of screen
 
         CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, width, height, padding);
-        mMap.animateCamera(cu);
+        mMap.moveCamera(cu);
     }
 
     private void setupActionBar() {
