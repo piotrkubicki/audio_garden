@@ -8,9 +8,9 @@ db.create_all()
 from app import Location
 from app import Transmitter
 
-l = Location('Audio Garden', '55.9340812', '-3.2112182,17)
+l = Location('Audio Garden', '55.9340812', '-3.211218217')
 t1 = Transmitter('00:1A:7D:DA:71:11', 'birds.m4a', 'Intro.m4a', 1)
-t2 = Transmitter('00:A0:50:12:1A:12', 'rain.m4a', 'Guilds.m4a', 1)
+t2 = Transmitter('00:A0:50:12:27:0F', 'rain.m4a', 'Guilds.m4a', 1)
 
 db.session.add(l)
 db.session.add(t1)
