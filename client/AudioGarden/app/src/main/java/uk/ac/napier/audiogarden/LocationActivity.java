@@ -52,7 +52,7 @@ import java.util.TimerTask;
 public class LocationActivity extends AppCompatActivity {
 
     private Location location;
-    private MediaPlayer bgMP, vMP;
+    private MediaPlayer bgMP, vMP, introMP;
     private SharedPreferences sharedPreferences;
     private BluetoothAdapter bluetoothAdapter;
     private BluetoothLeScanner mLEScanner;
@@ -83,6 +83,16 @@ public class LocationActivity extends AppCompatActivity {
 
         bgMP= new MediaPlayer();
         vMP = new MediaPlayer();
+        introMP = new MediaPlayer();
+
+        introMP.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+            @Override
+            public void onPrepared(MediaPlayer mp) {
+                mp.start();
+                fadeIn();
+            }
+        });
+
 
         bgMP.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
             public void onPrepared(MediaPlayer mp) {
@@ -118,6 +128,7 @@ public class LocationActivity extends AppCompatActivity {
         setView();
 
         checkBluetoothState(); // check if bluetooth available
+        playIntro(introMP, Integer.toString(location.getId()));
     }
 
     private void checkBluetoothState() {
@@ -199,6 +210,23 @@ public class LocationActivity extends AppCompatActivity {
         location.setTransmittersIds(locations);
     }
 
+    private void playIntro(MediaPlayer introMp, String locationID) {
+        String path = getString(R.string.base_url) + "locations/" + locationID + "/intro";
+
+        if (introMp.isPlaying()) {
+            return;     // abort if currently playing
+        }
+
+        try {
+            introMp.setDataSource(getApplicationContext(), Uri.parse(path));
+            introMp.setAudioStreamType(AudioManager.STREAM_MUSIC);
+            introMp.setLooping(true);
+            introMp.prepareAsync();
+        } catch (IOException e) {
+            return;
+        }
+    }
+
     private void playTracks(MediaPlayer backgroundMP, MediaPlayer voiceMP, String locationID, String transmitterID) {
         String path = getString(R.string.base_url) + "locations/" + locationID + "/"+ transmitterID;
         mLEScanner.stopScan(mScanCallback);
@@ -207,7 +235,7 @@ public class LocationActivity extends AppCompatActivity {
             // Request new sounds only if voice record is not playing
             if (!voiceMP.isPlaying()) {
                 // fadeout background music if playing
-                if (bgMP.isPlaying()) {
+                if (bgMP.isPlaying() || introMP.isPlaying()) {
                     fadeOut();
                     synchronized (bgMP) {
                         bgMP.wait(FADE_DURATION + 1000);
@@ -325,14 +353,6 @@ public class LocationActivity extends AppCompatActivity {
         if (rssi == 0) {
             return false;
         }
-
-//        double ratio = rssi * 1.0 / txPower;
-//
-//        if (ratio < 1.0) {
-//            distance = Math.pow(ratio, 10);
-//        } else {
-//             distance = (0.89976) * Math.pow(ratio, 7.7095) + 0.111;
-//        }
 
         noiseFilter.get(transmitterId).add(rssi);
         List<Double> samples = noiseFilter.get(transmitterId);
