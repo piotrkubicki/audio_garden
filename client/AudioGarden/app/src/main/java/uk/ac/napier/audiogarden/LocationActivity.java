@@ -18,8 +18,10 @@ import android.bluetooth.le.ScanCallback;
 import android.bluetooth.le.ScanFilter;
 import android.bluetooth.le.ScanResult;
 import android.bluetooth.le.ScanSettings;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.LocationManager;
@@ -85,6 +87,8 @@ public class LocationActivity extends AppCompatActivity {
 
     private ImageView foundDevice;
     private ImageView scanning;
+    private Intent serviceIntent;
+    private BroadcastReceiver receiver;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -129,8 +133,8 @@ public class LocationActivity extends AppCompatActivity {
                 startAnimation();
             }
         });
-
         setLocation();
+        setupReceiver();
         setView();
         startAnimation();
         checkBluetoothState(); // check if bluetooth available
@@ -148,6 +152,30 @@ public class LocationActivity extends AppCompatActivity {
             scanSettings = new ScanSettings.Builder().setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY).build();
             mLEScanner.startScan(null, scanSettings, mScanCallback);
         }
+    }
+
+    private void setupReceiver() {
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(Constants.ACTION.STOP_ACTION);
+        filter.addAction(Constants.ACTION.PLAY_ACTION);
+        filter.addAction(Constants.ACTION.PAUSE_ACTION);
+        filter.addAction(Constants.ACTION.RESET_ACTION);
+        receiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                String action = intent.getAction();
+                if (action.equals(Constants.ACTION.STOP_ACTION)) {
+                    stopSounds();
+                } else if (action.equals(Constants.ACTION.PLAY_ACTION)) {
+                    resumeSounds();
+                } else if (action.equals(Constants.ACTION.PAUSE_ACTION)) {
+                    pauseSounds();
+                } else if (action.equals(Constants.ACTION.RESET_ACTION)) {
+                    rePlaySounds();
+                }
+            }
+        };
+        registerReceiver(receiver,filter);
     }
 
     @Override
@@ -192,6 +220,13 @@ public class LocationActivity extends AppCompatActivity {
             }
         }
 
+    }
+
+    //start notification service
+    public void startService() {
+        serviceIntent = new Intent(LocationActivity.this, NotificationService.class);
+        serviceIntent.setAction(Constants.ACTION.STARTFOREGROUND_ACTION);
+        startService(serviceIntent);
     }
 
     private void setView() {
@@ -313,6 +348,7 @@ public class LocationActivity extends AppCompatActivity {
                 if (volume <= 0 || volume >= 1) {
                     scanFilters.remove(newId); // remove currently played device from list
                     stopAnimation();
+                    startService();
                     resetNoiseFilter();
                     playTracks(bgMP, vMP, Integer.toString(location.getId()), newId);
                 }
@@ -343,6 +379,7 @@ public class LocationActivity extends AppCompatActivity {
 
     //stop ripple animation
     public void stopAnimation() {
+        startService();
         final RippleBackground rippleBackground=(RippleBackground)findViewById(R.id.scanning);
         foundDevice();
         rippleBackground.stopRippleAnimation();
@@ -461,5 +498,18 @@ public class LocationActivity extends AppCompatActivity {
 
     private void restartLocation() {
         setLocation();
+    }
+
+    @Override
+    protected void onDestroy() {
+        stopSounds();
+        serviceIntent = new Intent(LocationActivity.this, NotificationService.class);
+        serviceIntent.setAction(Constants.ACTION.STOPFOREGROUND_ACTION);
+        startService(serviceIntent);
+        if (receiver != null) {
+            unregisterReceiver(receiver);
+            receiver = null;
+        }
+        super.onDestroy();
     }
 }
