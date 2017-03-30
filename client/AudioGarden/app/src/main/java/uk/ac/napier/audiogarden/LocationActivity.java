@@ -133,6 +133,28 @@ public class LocationActivity extends AppCompatActivity {
                 startAnimation();
             }
         });
+        setLocation();
+        setupReceiver();
+        setView();
+        startAnimation();
+        checkBluetoothState(); // check if bluetooth available
+    }
+
+    private void checkBluetoothState() {
+        if (!getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
+            Toast.makeText(this, "BLE Not Supported", Toast.LENGTH_SHORT).show();
+            finish();
+        } else if (bluetoothAdapter == null || !bluetoothAdapter.isEnabled()) {
+            Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+            startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
+        } else {
+            mLEScanner = BluetoothAdapter.getDefaultAdapter().getBluetoothLeScanner();
+            scanSettings = new ScanSettings.Builder().setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY).build();
+            mLEScanner.startScan(null, scanSettings, mScanCallback);
+        }
+    }
+
+    private void setupReceiver() {
         IntentFilter filter = new IntentFilter();
         filter.addAction(Constants.ACTION.STOP_ACTION);
         filter.addAction(Constants.ACTION.PLAY_ACTION);
@@ -154,24 +176,6 @@ public class LocationActivity extends AppCompatActivity {
             }
         };
         registerReceiver(receiver,filter);
-        setLocation();
-        setView();
-        startAnimation();
-        checkBluetoothState(); // check if bluetooth available
-    }
-
-    private void checkBluetoothState() {
-        if (!getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
-            Toast.makeText(this, "BLE Not Supported", Toast.LENGTH_SHORT).show();
-            finish();
-        } else if (bluetoothAdapter == null || !bluetoothAdapter.isEnabled()) {
-            Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-            startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
-        } else {
-            mLEScanner = BluetoothAdapter.getDefaultAdapter().getBluetoothLeScanner();
-            scanSettings = new ScanSettings.Builder().setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY).build();
-            mLEScanner.startScan(null, scanSettings, mScanCallback);
-        }
     }
 
     @Override
@@ -498,6 +502,10 @@ public class LocationActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
+        stopSounds();
+        serviceIntent = new Intent(LocationActivity.this, NotificationService.class);
+        serviceIntent.setAction(Constants.ACTION.STOPFOREGROUND_ACTION);
+        startService(serviceIntent);
         if (receiver != null) {
             unregisterReceiver(receiver);
             receiver = null;
