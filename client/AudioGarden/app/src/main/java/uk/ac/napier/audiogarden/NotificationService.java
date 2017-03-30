@@ -44,28 +44,54 @@ public class NotificationService extends Service {
                 updateNotification(playPause,stopReplay);
                 Intent i = new Intent(Constants.ACTION.STOP_ACTION);
                 sendBroadcast(i);
+                i = new Intent(Constants.ACTION.BLANK_ACTION);
+                sendBroadcast(i);
             } else if (intent.getAction().equals(Constants.ACTION.REPLAY_ACTION)) {
                 stopReplay = 0;
                 updateNotification(playPause,stopReplay);
                 Intent i = new Intent(Constants.ACTION.REPLAY_ACTION);
+                sendBroadcast(i);
+                i = new Intent(Constants.ACTION.BLANK_ACTION);
                 sendBroadcast(i);
             } else if (intent.getAction().equals(Constants.ACTION.PLAY_ACTION)) {
                 playPause = 0;
                 updateNotification(playPause,stopReplay);
                 Intent i = new Intent(Constants.ACTION.PLAY_ACTION);
                 sendBroadcast(i);
+                i = new Intent(Constants.ACTION.BLANK_ACTION);
+                sendBroadcast(i);
             } else if (intent.getAction().equals(Constants.ACTION.PAUSE_ACTION)) {
                 playPause = 1;
+                stopReplay = 1;
                 updateNotification(playPause,stopReplay);
                 Intent i = new Intent(Constants.ACTION.PAUSE_ACTION);
+                sendBroadcast(i);
+                i = new Intent(Constants.ACTION.BLANK_ACTION);
                 sendBroadcast(i);
             } else if (intent.getAction().equals(Constants.ACTION.RESET_ACTION)) {
                 updateNotification(playPause,stopReplay);
                 Intent i = new Intent(Constants.ACTION.RESET_ACTION);
                 sendBroadcast(i);
+                i = new Intent(Constants.ACTION.BLANK_ACTION);
+                sendBroadcast(i);
             } else if (intent.getAction().equals( Constants.ACTION.STOPFOREGROUND_ACTION)) {
                 stopForeground(true);
                 stopSelf();
+            } else if (intent.getAction().equals( Constants.ACTION.SEND_STOP_ACTION)) {
+                stopReplay = 1;
+                updateNotification(playPause,stopReplay);
+            } else if (intent.getAction().equals( Constants.ACTION.SEND_REPLAY_ACTION)) {
+                stopReplay = 0;
+                updateNotification(playPause,stopReplay);
+            } else if (intent.getAction().equals( Constants.ACTION.SEND_PLAY_ACTION)) {
+                playPause = 0;
+                updateNotification(playPause,stopReplay);
+            } else if (intent.getAction().equals( Constants.ACTION.SEND_PAUSE_ACTION)) {
+                playPause = 1;
+                stopReplay = 1;
+                updateNotification(playPause,stopReplay);
+            } else if (intent.getAction().equals( Constants.ACTION.SEND_RESET_ACTION)) {
+                updateNotification(playPause,stopReplay);
             }
         return START_STICKY;
     }
