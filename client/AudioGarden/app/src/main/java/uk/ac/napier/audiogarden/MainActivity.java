@@ -51,15 +51,6 @@ public class MainActivity extends AppCompatActivity {
            }
         });
 
-        btnSettings = (RelativeLayout) findViewById(R.id.btnSettings);
-        btnSettings.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(getApplicationContext(), SettingsActivity.class);
-                startActivity(intent);
-            }
-        });
-
         btnMap = (RelativeLayout) findViewById(R.id.btnMap);
         btnMap.setOnClickListener(new View.OnClickListener() {
             @Override

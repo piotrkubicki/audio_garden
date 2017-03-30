@@ -4,7 +4,7 @@
     <item android:state_pressed="true">
         <shape>
             <solid android:color="@color/blueAccent"/>
-            <stroke android:width="2px" android:color="#2f6699"/>
+            <stroke android:width="2px" android:color="@color/blue"/>
             <padding android:left="10dp" android:top="20dp" android:right="10dp"
                 android:bottom="20dp"/>
         </shape>
@@ -13,7 +13,7 @@
     <item>
         <shape>
             <solid android:color="@color/blue"/>
-            <stroke android:width="2px" android:color="#2f6699"/>
+            <stroke android:width="2px" android:color="@color/blue"/>
             <padding android:left="10dp" android:top="20dp" android:right="10dp"
                 android:bottom="20dp"/>
         </shape>

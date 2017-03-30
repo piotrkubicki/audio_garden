@@ -1,23 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#3F51B5</color>
-    <color name="colorPrimaryDark">#303F9F</color>
-    <color name="colorAccent">#FF4081</color>
+    <color name="colorPrimary">#2196f3</color>
+    <color name="colorPrimaryDark">#1976d2</color>
+    <color name="colorAccent">#64b5f6</color>
 
     <color name="white">#ffffff</color>
+    <color name="black">#ff000000</color>
+    <color name="transparent">#00000000</color>
+    <color name="unselected_tabtext">#77000000</color>
+    <color name="shuffle_grey">#ffdedede</color>
+    <color name="background_grey">#ff424242</color>
+    <color name="selected_tabtext">#bb000000</color>
+    <color name="transparent_black">#aa000000</color>
 
-    <color name="orange">#ff5722</color>
-    <color name="orangeAccent">#ff9800</color>
+    <color name="orange">#FF5722</color>
+    <color name="orangeAccent">#FF8A65</color>
 
-    <color name="green">#4caf50</color>
-    <color name="greenAccent">#8bc34a</color>
+    <color name="green">#4CAF50</color>
+    <color name="greenAccent">#81C784</color>
 
     <color name="blue">#1976d2</color>
-    <color name="blueAccent">#00bcd4</color>
+    <color name="blueAccent">#64b5f6</color>
 
-    <color name="yellow">#ffc107</color>
-    <color name="yellowAccent">#ffeb3b</color>
-
-    <color name="grey">#9e9e9e</color>
-
+    <color name="yellow">#FFEB3B</color>
+    <color name="yellowAccent">#FFF59D</color>
 </resources>
