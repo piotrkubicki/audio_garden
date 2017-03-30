@@ -48,7 +48,18 @@
 
         <activity
             android:name=".LocationsActivity"
-            android:label="@string/title_activity_location"
+            android:label="@string/title_activity_locations"
+            android:parentActivityName=".MainActivity"
+            android:screenOrientation="portrait" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".MainActivity" />
+        </activity>
+
+        <activity
+            android:name=".HelpActivity"
+            android:label="@string/title_activity_help"
+            android:theme="@style/AppTheme.NoActionBar"
             android:parentActivityName=".MainActivity"
             android:screenOrientation="portrait" >
             <meta-data

@@ -46,6 +46,17 @@
             android:layout_alignParentBottom="true">
 
             <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center_horizontal">
+                <android.support.design.widget.FloatingActionButton
+                    android:id="@+id/stop_replay_btn"
+                    android:layout_width="@dimen/round_btn_radius"
+                    android:layout_height="@dimen/round_btn_radius" />
+            </LinearLayout>
+
+            <LinearLayout
                 android:id="@+id/pause_play_btn_view"
                 android:layout_weight="1"
                 android:layout_height="wrap_content"
@@ -53,17 +64,6 @@
                 android:gravity="center_horizontal">
                 <android.support.design.widget.FloatingActionButton
                     android:id="@+id/pause_play_btn"
-                    android:layout_width="@dimen/round_btn_radius"
-                    android:layout_height="@dimen/round_btn_radius" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center_horizontal">
-                <android.support.design.widget.FloatingActionButton
-                    android:id="@+id/stop_replay_btn"
                     android:layout_width="@dimen/round_btn_radius"
                     android:layout_height="@dimen/round_btn_radius" />
             </LinearLayout>

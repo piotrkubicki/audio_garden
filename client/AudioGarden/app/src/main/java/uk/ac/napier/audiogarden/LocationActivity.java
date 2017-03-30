@@ -84,7 +84,7 @@ public class LocationActivity extends AppCompatActivity {
 
     private List<String> scanFilters;               // list of valid devices
     private Map<String, List<Double>> noiseFilter;  // stores distance samples of each valid device
-    private String lastTrack;
+    private String lastTrack = null;
 
     private int voicePosition;
     private int bgPosition;
@@ -624,12 +624,14 @@ public class LocationActivity extends AppCompatActivity {
     }
 
     private void replaySounds() {
-        playTracks(bgMP, vMP, Integer.toString(location.getId()), lastTrack, AnimMode.REPLAY);
+        if (lastTrack != null) {
+            playTracks(bgMP, vMP, Integer.toString(location.getId()), lastTrack, AnimMode.REPLAY);
 
-        FloatingActionButton btn = (FloatingActionButton) findViewById(R.id.stop_replay_btn);
-        btn.setImageDrawable(getDrawable(R.drawable.ic_stop_black_52dp));
-        FloatingActionButton pauseBtn = (FloatingActionButton) findViewById(R.id.pause_play_btn);
-        pauseBtn.setImageDrawable(getDrawable(R.drawable.ic_pause_black_52dp));
+            FloatingActionButton btn = (FloatingActionButton) findViewById(R.id.stop_replay_btn);
+            btn.setImageDrawable(getDrawable(R.drawable.ic_stop_black_52dp));
+            FloatingActionButton pauseBtn = (FloatingActionButton) findViewById(R.id.pause_play_btn);
+            pauseBtn.setImageDrawable(getDrawable(R.drawable.ic_pause_black_52dp));
+        }
     }
 
     private void restartLocation() {
