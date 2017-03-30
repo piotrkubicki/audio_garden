@@ -33,6 +33,13 @@ def get_locations():
 
     return jsonify(loc)
 
+@application.route('/locations/<location_id>/intro', methods=['GET'])
+def location_get_intro(location_id):
+    base_path = 'static/audio/'
+    filename = 'intro_' + location_id + '.mp3'
+
+    return send_file(base_path + filename, mimetype='audio/mp3', as_attachment=True, attachment_filename=filename)
+
 @application.route('/locations/<location_id>/<transmitter_id>/background', methods=['GET'])
 def get_transmitter_bg_sound(location_id, transmitter_id):
     base_path = 'static/audio/background/'

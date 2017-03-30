@@ -24,6 +24,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.content.res.ColorStateList;
 import android.location.LocationManager;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
@@ -32,6 +33,7 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.ParcelUuid;
 import android.provider.MediaStore;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -65,30 +67,39 @@ import java.util.TimerTask;
 
 public class LocationActivity extends AppCompatActivity {
 
+    private FloatingActionButton pausePlayBtn, stopReplayBtn, resetLocBtn;
     private Location location;
-    private MediaPlayer bgMP, vMP;
+    private MediaPlayer bgMP, vMP, introMP;
     private SharedPreferences sharedPreferences;
     private BluetoothAdapter bluetoothAdapter;
     private BluetoothLeScanner mLEScanner;
     private final int REQUEST_ENABLE_BT = 1;
     private ScanSettings scanSettings;
 
-    private final int FADE_DURATION = 5000;
+    private final int FADE_DURATION = 5000;         // duration of fade effects
     private final int FADE_INTERVAL = 250;
     private final int MAX_VOLUME = 1;
     private float volume = 0;
-    private Double maxDistance = -70.0;
+    private Double maxDistance = -65.0;             // distance read that trigger server audio stream requests
 
-    private List<String> scanFilters;
-    private Map<String, List<Double>> noiseFilter;
+    private List<String> scanFilters;               // list of valid devices
+    private Map<String, List<Double>> noiseFilter;  // stores distance samples of each valid device
+    private String lastTrack;
 
     private int voicePosition;
     private int bgPosition;
 
     private ImageView foundDevice;
     private ImageView scanning;
+
+    private boolean firstPlay = true;               // used to pause scanning when pause btn pressed for the first time
+
     private Intent serviceIntent;
     private BroadcastReceiver receiver;
+
+    public enum AnimMode {
+        FOUND, REPLAY, PAUSE, DESTROY
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -105,9 +116,17 @@ public class LocationActivity extends AppCompatActivity {
 
         bgMP.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
             public void onPrepared(MediaPlayer mp) {
-                mp.start();
                 fadeIn();
-                vMP.prepareAsync();     // prepare voice media player
+                mp.start();
+                pausePlayBtn.setImageDrawable(getDrawable(R.drawable.ic_pause_black_52dp));
+                stopReplayBtn.setImageDrawable(getDrawable(R.drawable.ic_stop_black_52dp));
+
+                // prevent error when second media player is not set
+                try {
+                    vMP.prepareAsync();     // prepare voice media player
+                } catch (IllegalStateException e) {
+                    return;
+                }
             }
         });
 
@@ -118,6 +137,8 @@ public class LocationActivity extends AppCompatActivity {
                         // allow background sound build up and run voice media player
                         mp.wait(FADE_DURATION + 1000);
                         mp.start();
+                        stopReplayBtn.setEnabled(true);
+                        pausePlayBtn.setEnabled(true);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
@@ -126,18 +147,92 @@ public class LocationActivity extends AppCompatActivity {
         });
 
         vMP.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-
             @Override
             public void onCompletion(MediaPlayer mediaPlayer) {
-                mLEScanner.startScan(null, scanSettings, mScanCallback);
-                startAnimation();
+                if (!firstPlay) runScanner();
+                else firstPlay = false;
+                stopReplayBtn.setImageDrawable(getDrawable(R.drawable.ic_replay_black_52dp));
+            }
+        });
+
+        pausePlayBtn = (FloatingActionButton) findViewById(R.id.pause_play_btn);
+        pausePlayBtn.setImageDrawable(getDrawable(R.drawable.ic_play_arrow_black_52dp));
+        pausePlayBtn.setBackgroundTintList(ContextCompat.getColorStateList(getApplicationContext(), R.color.fab_ripple_color));
+        pausePlayBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (bgMP.isPlaying()) {
+                    pauseSounds();
+                } else {
+                    resumeSounds();
+                }
+            }
+        });
+
+        stopReplayBtn = (FloatingActionButton) findViewById(R.id.stop_replay_btn);
+        stopReplayBtn.setImageDrawable(getDrawable(R.drawable.ic_replay_black_52dp));
+        stopReplayBtn.setBackgroundTintList(ContextCompat.getColorStateList(getApplicationContext(), R.color.fab_ripple_color));
+        stopReplayBtn.setEnabled(false);
+        stopReplayBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (bgMP.isPlaying()) {
+                    stopSounds();
+                } else {
+                    replaySounds();
+                }
+            }
+        });
+
+        resetLocBtn = (FloatingActionButton) findViewById(R.id.reset_loc_btn);
+        resetLocBtn.setImageDrawable(getDrawable(R.drawable.ic_restore_black_52dp));
+        resetLocBtn.setBackgroundTintList(ContextCompat.getColorStateList(getApplicationContext(), R.color.fab_ripple_color));
+        resetLocBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                restartLocation();
             }
         });
         setLocation();
         setupReceiver();
         setView();
-        startAnimation();
         checkBluetoothState(); // check if bluetooth available
+        playIntro(bgMP, Integer.toString(location.getId()));
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        if (bgMP.isPlaying()) {
+            bgMP.stop();
+            bgMP.release();
+        }
+
+        if (vMP.isPlaying()) {
+            vMP.stop();
+            vMP.release();
+        }
+
+        serviceIntent = new Intent(LocationActivity.this, NotificationService.class);
+        serviceIntent.setAction(Constants.ACTION.STOPFOREGROUND_ACTION);
+        startService(serviceIntent);
+        if (receiver != null) {
+            unregisterReceiver(receiver);
+            receiver = null;
+        }
+
+        stopScanner(AnimMode.DESTROY);
+    }
+
+    private  void runScanner() {
+        mLEScanner.startScan(null, scanSettings, mScanCallback);
+        startAnimation();
+    }
+
+    private void stopScanner(AnimMode mode) {
+        mLEScanner.stopScan(mScanCallback);
+        stopAnimation(mode);
     }
 
     private void checkBluetoothState() {
@@ -150,7 +245,7 @@ public class LocationActivity extends AppCompatActivity {
         } else {
             mLEScanner = BluetoothAdapter.getDefaultAdapter().getBluetoothLeScanner();
             scanSettings = new ScanSettings.Builder().setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY).build();
-            mLEScanner.startScan(null, scanSettings, mScanCallback);
+            runScanner();
         }
     }
 
@@ -168,7 +263,7 @@ public class LocationActivity extends AppCompatActivity {
                 if (action.equals(Constants.ACTION.STOP_ACTION)) {
                     stopSounds();
                 } else if (action.equals(Constants.ACTION.REPLAY_ACTION)) {
-                    rePlaySounds();
+                    replaySounds();
                 } else if (action.equals(Constants.ACTION.PLAY_ACTION)) {
                     resumeSounds();
                 } else if (action.equals(Constants.ACTION.PAUSE_ACTION)) {
@@ -184,7 +279,13 @@ public class LocationActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_ENABLE_BT) {
-            checkBluetoothState();
+            if (resultCode == 0) {
+                Intent intent = new Intent(getApplicationContext(), LocationsActivity.class); //go back if user select no
+                startActivity(intent);
+                finish();
+            } else {
+                checkBluetoothState();
+            }
         }
     }
 
@@ -248,18 +349,39 @@ public class LocationActivity extends AppCompatActivity {
         location.setTransmittersIds(locations);
     }
 
-    private void playTracks(MediaPlayer backgroundMP, MediaPlayer voiceMP, String locationID, String transmitterID) {
+    private void playIntro(MediaPlayer introMp, String locationID) {
+        String path = getString(R.string.base_url) + "locations/" + locationID + "/intro";
+
+        if (introMp.isPlaying()) {
+            return;     // abort if currently playing
+        }
+
+        try {
+            introMp.stop();
+            introMp.reset();
+            introMp.setDataSource(getApplicationContext(), Uri.parse(path));
+            introMp.setAudioStreamType(AudioManager.STREAM_MUSIC);
+            introMp.setLooping(true);
+            introMp.prepareAsync();
+        } catch (IOException e) {
+            return;
+        }
+    }
+
+    private void playTracks(MediaPlayer backgroundMP, MediaPlayer voiceMP, String locationID, String transmitterID, AnimMode animMode) {
         String path = getString(R.string.base_url) + "locations/" + locationID + "/"+ transmitterID;
-        mLEScanner.stopScan(mScanCallback);
+        stopScanner(animMode);
+        pausePlayBtn.setEnabled(false); //prevent user from stop until voice mp ready
+        stopReplayBtn.setEnabled(false);
 
         try {
             // Request new sounds only if voice record is not playing
             if (!voiceMP.isPlaying()) {
                 // fadeout background music if playing
-                if (bgMP.isPlaying()) {
+                if (backgroundMP.isPlaying()) {
                     fadeOut();
-                    synchronized (bgMP) {
-                        bgMP.wait(FADE_DURATION + 1000);
+                    synchronized (backgroundMP) {
+                        backgroundMP.wait(FADE_DURATION + 1000);
                     }
                 }
                 // set backgound media player
@@ -337,7 +459,6 @@ public class LocationActivity extends AppCompatActivity {
             if(result == null || result.getDevice() == null)
                 return;
 
-            //String newId = result.getScanRecord().getServiceUuids().get(0).toString();
             String newId = result.getDevice().getAddress().toString();
 
             // validate device id
@@ -350,14 +471,13 @@ public class LocationActivity extends AppCompatActivity {
             if (inRange) {
                 if (volume <= 0 || volume >= 1) {
                     scanFilters.remove(newId); // remove currently played device from list
-                    stopAnimation();
                     startService();
                     resetNoiseFilter();
-                    playTracks(bgMP, vMP, Integer.toString(location.getId()), newId);
+                    lastTrack = newId;
+                    playTracks(bgMP, vMP, Integer.toString(location.getId()), newId, AnimMode.FOUND);
                 }
             }
         }
-
 
         @Override
         public void onBatchScanResults(List<ScanResult> results) {
@@ -381,13 +501,21 @@ public class LocationActivity extends AppCompatActivity {
     }
 
     //stop ripple animation
-    public void stopAnimation() {
+
+    public void stopAnimation(AnimMode mode) {
         startService();
         final RippleBackground rippleBackground=(RippleBackground)findViewById(R.id.scanning);
         foundDevice();
         rippleBackground.stopRippleAnimation();
         TextView text = (TextView) findViewById(R.id.scanText);
-        text.setText(R.string.strFound);
+
+        if (mode == AnimMode.FOUND) {
+            text.setText(R.string.strFound);
+        } else if (mode == AnimMode.REPLAY) {
+            text.setText(R.string.strReplay);
+        } else if (mode == AnimMode.PAUSE) {
+            text.setText(R.string.strPaused);
+        }
     }
 
     //set centre image to bluetooth found with pop animation
@@ -432,14 +560,6 @@ public class LocationActivity extends AppCompatActivity {
             return false;
         }
 
-//        double ratio = rssi * 1.0 / txPower;
-//
-//        if (ratio < 1.0) {
-//            distance = Math.pow(ratio, 10);
-//        } else {
-//             distance = (0.89976) * Math.pow(ratio, 7.7095) + 0.111;
-//        }
-
         noiseFilter.get(transmitterId).add(rssi);
         List<Double> samples = noiseFilter.get(transmitterId);
 
@@ -473,9 +593,14 @@ public class LocationActivity extends AppCompatActivity {
     private void pauseSounds() {
         vMP.pause();
         bgMP.pause();
-
         voicePosition = vMP.getCurrentPosition();
         bgPosition = bgMP.getCurrentPosition();
+        stopScanner(AnimMode.PAUSE);
+
+        FloatingActionButton playBtn = (FloatingActionButton) findViewById(R.id.pause_play_btn);
+        playBtn.setImageDrawable(getDrawable(R.drawable.ic_play_arrow_black_52dp));
+        FloatingActionButton resumeBtn = (FloatingActionButton) findViewById(R.id.stop_replay_btn);
+        resumeBtn.setImageDrawable(getDrawable(R.drawable.ic_replay_black_52dp));
     }
 
     private void resumeSounds() {
@@ -484,35 +609,33 @@ public class LocationActivity extends AppCompatActivity {
 
         bgMP.start();
         vMP.start();
+        runScanner();
+
+        FloatingActionButton pauseBtn = (FloatingActionButton) findViewById(R.id.pause_play_btn);
+        pauseBtn.setImageDrawable(getDrawable(R.drawable.ic_pause_black_52dp));
+        FloatingActionButton stopBtn = (FloatingActionButton) findViewById(R.id.stop_replay_btn);
+        stopBtn.setImageDrawable(getDrawable(R.drawable.ic_stop_black_52dp));
     }
 
     private void stopSounds() {
         vMP.stop();
         bgMP.stop();
+        runScanner();
+
+        FloatingActionButton btn = (FloatingActionButton) findViewById(R.id.stop_replay_btn);
+        btn.setImageDrawable(getDrawable(R.drawable.ic_replay_black_52dp));
     }
 
-    private void rePlaySounds() {
-        bgMP.seekTo(0);
-        vMP.seekTo(0);
+    private void replaySounds() {
+        playTracks(bgMP, vMP, Integer.toString(location.getId()), lastTrack, AnimMode.REPLAY);
 
-        bgMP.start();
-        vMP.start();
+        FloatingActionButton btn = (FloatingActionButton) findViewById(R.id.stop_replay_btn);
+        btn.setImageDrawable(getDrawable(R.drawable.ic_stop_black_52dp));
+        FloatingActionButton pauseBtn = (FloatingActionButton) findViewById(R.id.pause_play_btn);
+        pauseBtn.setImageDrawable(getDrawable(R.drawable.ic_pause_black_52dp));
     }
 
     private void restartLocation() {
         setLocation();
-    }
-
-    @Override
-    protected void onDestroy() {
-        stopSounds();
-        serviceIntent = new Intent(LocationActivity.this, NotificationService.class);
-        serviceIntent.setAction(Constants.ACTION.STOPFOREGROUND_ACTION);
-        startService(serviceIntent);
-        if (receiver != null) {
-            unregisterReceiver(receiver);
-            receiver = null;
-        }
-        super.onDestroy();
     }
 }

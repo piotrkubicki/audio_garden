@@ -37,6 +37,8 @@
     <!-- Strings related to Location -->
     <string name="strSearching">Searching for beacons&#8230;</string>
     <string name="strFound">Beacon found! Playing&#8230;</string>
+    <string name="strReplay">Replaying the sounds!</string>
+    <string name="strPaused">Pausing!</string>
 
 
     <!-- Strings related to Notification Bar -->
