@@ -98,22 +98,18 @@ public class LocationActivity extends AppCompatActivity {
 
         bgMP= new MediaPlayer();
         vMP = new MediaPlayer();
-        introMP = new MediaPlayer();
-
-        introMP.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-            @Override
-            public void onPrepared(MediaPlayer mp) {
-                mp.start();
-                fadeIn();
-            }
-        });
-
 
         bgMP.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
             public void onPrepared(MediaPlayer mp) {
-                mp.start();
                 fadeIn();
-                vMP.prepareAsync();     // prepare voice media player
+                mp.start();
+
+                // prevent error when second media player is not set
+                try {
+                    vMP.prepareAsync();     // prepare voice media player
+                } catch (IllegalStateException e) {
+                    return;
+                }
             }
         });
 
@@ -144,7 +140,23 @@ public class LocationActivity extends AppCompatActivity {
         setView();
         startAnimation();
         checkBluetoothState(); // check if bluetooth available
-        playIntro(introMP, Integer.toString(location.getId()));
+        playIntro(bgMP, Integer.toString(location.getId()));
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        if (bgMP.isPlaying()) {
+            bgMP.stop();
+        }
+
+        if (vMP.isPlaying()) {
+            vMP.stop();
+        }
+
+        mLEScanner.stopScan(mScanCallback);
+
     }
 
     private void checkBluetoothState() {
@@ -165,8 +177,9 @@ public class LocationActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_ENABLE_BT) {
             if (resultCode == 0) {
-                Intent intent = new Intent(getApplicationContext(), LocationsActivity.class);
+                Intent intent = new Intent(getApplicationContext(), LocationsActivity.class); //go back if user select no
                 startActivity(intent);
+                finish();
             } else {
                 checkBluetoothState();
             }
@@ -234,6 +247,8 @@ public class LocationActivity extends AppCompatActivity {
         }
 
         try {
+            introMp.stop();
+            introMp.reset();
             introMp.setDataSource(getApplicationContext(), Uri.parse(path));
             introMp.setAudioStreamType(AudioManager.STREAM_MUSIC);
             introMp.setLooping(true);
@@ -251,10 +266,10 @@ public class LocationActivity extends AppCompatActivity {
             // Request new sounds only if voice record is not playing
             if (!voiceMP.isPlaying()) {
                 // fadeout background music if playing
-                if (bgMP.isPlaying() || introMP.isPlaying()) {
+                if (backgroundMP.isPlaying()) {
                     fadeOut();
-                    synchronized (bgMP) {
-                        bgMP.wait(FADE_DURATION + 1000);
+                    synchronized (backgroundMP) {
+                        backgroundMP.wait(FADE_DURATION + 1000);
                     }
                 }
                 // set backgound media player
@@ -332,7 +347,6 @@ public class LocationActivity extends AppCompatActivity {
             if(result == null || result.getDevice() == null)
                 return;
 
-            //String newId = result.getScanRecord().getServiceUuids().get(0).toString();
             String newId = result.getDevice().getAddress().toString();
 
             // validate device id
@@ -351,7 +365,6 @@ public class LocationActivity extends AppCompatActivity {
                 }
             }
         }
-
 
         @Override
         public void onBatchScanResults(List<ScanResult> results) {
