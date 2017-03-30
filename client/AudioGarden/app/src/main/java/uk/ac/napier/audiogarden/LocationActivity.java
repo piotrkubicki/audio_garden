@@ -157,6 +157,7 @@ public class LocationActivity extends AppCompatActivity {
     private void setupReceiver() {
         IntentFilter filter = new IntentFilter();
         filter.addAction(Constants.ACTION.STOP_ACTION);
+        filter.addAction(Constants.ACTION.REPLAY_ACTION);
         filter.addAction(Constants.ACTION.PLAY_ACTION);
         filter.addAction(Constants.ACTION.PAUSE_ACTION);
         filter.addAction(Constants.ACTION.RESET_ACTION);
@@ -166,12 +167,14 @@ public class LocationActivity extends AppCompatActivity {
                 String action = intent.getAction();
                 if (action.equals(Constants.ACTION.STOP_ACTION)) {
                     stopSounds();
+                } else if (action.equals(Constants.ACTION.REPLAY_ACTION)) {
+                    rePlaySounds();
                 } else if (action.equals(Constants.ACTION.PLAY_ACTION)) {
                     resumeSounds();
                 } else if (action.equals(Constants.ACTION.PAUSE_ACTION)) {
                     pauseSounds();
                 } else if (action.equals(Constants.ACTION.RESET_ACTION)) {
-                    rePlaySounds();
+                    restartLocation();
                 }
             }
         };
