@@ -18,8 +18,10 @@ import android.bluetooth.le.ScanCallback;
 import android.bluetooth.le.ScanFilter;
 import android.bluetooth.le.ScanResult;
 import android.bluetooth.le.ScanSettings;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
@@ -89,7 +91,11 @@ public class LocationActivity extends AppCompatActivity {
 
     private ImageView foundDevice;
     private ImageView scanning;
+
     private boolean firstPlay = true;               // used to pause scanning when pause btn pressed for the first time
+
+    private Intent serviceIntent;
+    private BroadcastReceiver receiver;
 
     public enum AnimMode {
         FOUND, REPLAY, PAUSE, DESTROY
@@ -187,8 +193,8 @@ public class LocationActivity extends AppCompatActivity {
                 restartLocation();
             }
         });
-
         setLocation();
+        setupReceiver();
         setView();
         checkBluetoothState(); // check if bluetooth available
         playIntro(bgMP, Integer.toString(location.getId()));
@@ -206,6 +212,14 @@ public class LocationActivity extends AppCompatActivity {
         if (vMP.isPlaying()) {
             vMP.stop();
             vMP.release();
+        }
+
+        serviceIntent = new Intent(LocationActivity.this, NotificationService.class);
+        serviceIntent.setAction(Constants.ACTION.STOPFOREGROUND_ACTION);
+        startService(serviceIntent);
+        if (receiver != null) {
+            unregisterReceiver(receiver);
+            receiver = null;
         }
 
         stopScanner(AnimMode.DESTROY);
@@ -233,6 +247,30 @@ public class LocationActivity extends AppCompatActivity {
             scanSettings = new ScanSettings.Builder().setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY).build();
             runScanner();
         }
+    }
+
+    private void setupReceiver() {
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(Constants.ACTION.STOP_ACTION);
+        filter.addAction(Constants.ACTION.PLAY_ACTION);
+        filter.addAction(Constants.ACTION.PAUSE_ACTION);
+        filter.addAction(Constants.ACTION.RESET_ACTION);
+        receiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                String action = intent.getAction();
+                if (action.equals(Constants.ACTION.STOP_ACTION)) {
+                    stopSounds();
+                } else if (action.equals(Constants.ACTION.PLAY_ACTION)) {
+                    resumeSounds();
+                } else if (action.equals(Constants.ACTION.PAUSE_ACTION)) {
+                    pauseSounds();
+                } else if (action.equals(Constants.ACTION.RESET_ACTION)) {
+                    replaySounds();
+                }
+            }
+        };
+        registerReceiver(receiver,filter);
     }
 
     @Override
@@ -283,6 +321,13 @@ public class LocationActivity extends AppCompatActivity {
             }
         }
 
+    }
+
+    //start notification service
+    public void startService() {
+        serviceIntent = new Intent(LocationActivity.this, NotificationService.class);
+        serviceIntent.setAction(Constants.ACTION.STARTFOREGROUND_ACTION);
+        startService(serviceIntent);
     }
 
     private void setView() {
@@ -423,6 +468,7 @@ public class LocationActivity extends AppCompatActivity {
             if (inRange) {
                 if (volume <= 0 || volume >= 1) {
                     scanFilters.remove(newId); // remove currently played device from list
+                    startService();
                     resetNoiseFilter();
                     lastTrack = newId;
                     playTracks(bgMP, vMP, Integer.toString(location.getId()), newId, AnimMode.FOUND);
@@ -452,7 +498,9 @@ public class LocationActivity extends AppCompatActivity {
     }
 
     //stop ripple animation
+
     public void stopAnimation(AnimMode mode) {
+        startService();
         final RippleBackground rippleBackground=(RippleBackground)findViewById(R.id.scanning);
         foundDevice();
         rippleBackground.stopRippleAnimation();

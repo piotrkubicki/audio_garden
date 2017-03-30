@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal"
+    android:background="@color/notification_material_background_media_default_color">
+
+    <ImageView
+        android:id="@+id/status_bar_album_art"
+        android:layout_width="@dimen/status_bar_album_art"
+        android:layout_height="@dimen/status_bar_album_art"
+        android:gravity="center" />
+
+    <ImageView
+        android:id="@+id/status_bar_icon"
+        android:layout_width="@dimen/status_bar_album_art"
+        android:layout_height="@dimen/status_bar_album_art"
+        android:background="@color/notification_material_background_media_default_color"
+        android:scaleType="center"
+        android:src="@mipmap/napier_logo"
+        android:visibility="gone" />
+    <LinearLayout
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:id="@+id/buttons"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:divider="?android:listDivider"
+        android:layout_toRightOf="@id/status_bar_album_art"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
+        android:showDividers="middle"
+        android:dividerPadding="12.0dip">
+        <ImageButton
+            android:id="@+id/status_bar_reset"
+            android:padding="10.0dip"
+            android:layout_width="0.0dip"
+            android:layout_height="@dimen/play_controls_notification"
+            android:src="@drawable/ic_reset"
+            android:scaleType="fitCenter"
+            android:layout_weight="1.0"
+            android:background="@color/notification_material_background_media_default_color"/>
+        <ImageButton
+            android:id="@+id/status_bar_play"
+            android:padding="10.0dip"
+            android:layout_width="0.0dip"
+            android:layout_height="@dimen/play_controls_notification"
+            android:src="@drawable/ic_play"
+            android:scaleType="fitCenter"
+            android:layout_weight="1.0"
+            android:background="@color/notification_material_background_media_default_color"/>
+        <ImageButton android:id="@+id/status_bar_stop"
+            android:padding="10.0dip"
+            android:layout_width="0.0dip"
+            android:layout_height="@dimen/play_controls_notification"
+            android:src="@drawable/ic_stop"
+            android:scaleType="fitCenter"
+            android:layout_weight="1.0"
+            android:background="@color/notification_material_background_media_default_color"/>
+    </LinearLayout>
+</LinearLayout>

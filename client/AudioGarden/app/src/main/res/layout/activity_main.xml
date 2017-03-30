@@ -16,33 +16,7 @@
         android:gravity="center"
         android:baselineAligned="false">
 
-        <!-- Map Button -->
-        <RelativeLayout
-            android:id="@+id/btnMap"
-            android:clickable="true"
-            android:background="@color/orange"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:gravity="center">
-            <ImageView
-                android:id="@+id/mapImage"
-                android:contentDescription=""
-                android:src="@drawable/ic_map"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center"/>
-            <TextView
-                android:text="@string/txtMap"
-                android:textStyle="bold"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/txtMap"
-                android:gravity="center"
-                android:layout_below="@+id/mapImage"/>
-        </RelativeLayout>
-
-        <!-- Garden Button -->
+        <!-- Locations Button -->
         <RelativeLayout
             android:id="@+id/btnGarden"
             android:clickable="true"
@@ -77,29 +51,30 @@
             android:gravity="center"
             android:baselineAligned="false">
 
-        <!-- Settings Button -->
+        <!-- Map Button -->
         <RelativeLayout
-            android:id="@+id/btnSettings"
+            android:id="@+id/btnMap"
             android:clickable="true"
-            android:background="@color/green"
+            android:background="@color/orange"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:gravity="center">
             <ImageView
-                android:id="@+id/settingsImage"
-                android:src="@drawable/ic_settings"
+                android:id="@+id/mapImage"
+                android:contentDescription=""
+                android:src="@drawable/ic_map"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center"/>
             <TextView
-                android:text="@string/txtSettings"
+                android:text="@string/txtMap"
                 android:textStyle="bold"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/txtSettings"
+                android:id="@+id/txtMap"
                 android:gravity="center"
-                android:layout_below="@+id/settingsImage"/>
+                android:layout_below="@+id/mapImage"/>
         </RelativeLayout>
 
         <!-- Help Button -->
