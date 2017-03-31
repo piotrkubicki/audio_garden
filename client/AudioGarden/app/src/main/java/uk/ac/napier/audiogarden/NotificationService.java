@@ -20,6 +20,16 @@ import android.widget.RemoteViews;
  */
 
 public class NotificationService extends Service {
+    private int PAUSE = 0;
+    private int PLAY = 1;
+    private int STOP = 0;
+    private int REPLAY = 1;
+    private int ENABLE = 0;
+    private int DISABLE = 1;
+    private int playPause = PAUSE;
+    private int stopReplay = STOP;
+    private int playPauseEnabled = ENABLE;
+    private int stopReplayEnabled = DISABLE;
 
     public void onDestroy() {
         super.onDestroy();
@@ -30,45 +40,39 @@ public class NotificationService extends Service {
 
         return null;
     }
-
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-
-        int playPause = 0;
-        int stopReplay = 0;
-        int playPauseEnabled = 0;
-        int stopReplayEnabled = 0;
-
             if (intent.getAction().equals(Constants.ACTION.STARTFOREGROUND_ACTION)) {
-                updateNotification(playPause,stopReplay, playPauseEnabled, stopReplayEnabled);
+                updateNotification();
 
             } else if (intent.getAction().equals(Constants.ACTION.STOP_ACTION)) {
-                stopReplay = 1;
-                updateNotification(playPause,stopReplay, playPauseEnabled, stopReplayEnabled);
+                stopReplay = REPLAY;
+                updateNotification();
                 Intent i = new Intent(Constants.ACTION.STOP_ACTION);
                 sendBroadcast(i);
 
             } else if (intent.getAction().equals(Constants.ACTION.REPLAY_ACTION)) {
-                stopReplay = 0;
-                updateNotification(playPause,stopReplay, playPauseEnabled, stopReplayEnabled);
+                stopReplay = STOP;
+                updateNotification();
                 Intent i = new Intent(Constants.ACTION.REPLAY_ACTION);
                 sendBroadcast(i);
 
             } else if (intent.getAction().equals(Constants.ACTION.PLAY_ACTION)) {
-                playPause = 0;
-                updateNotification(playPause,stopReplay, playPauseEnabled, stopReplayEnabled);
+                playPause = PAUSE;
+                stopReplay = STOP;
+                updateNotification();
                 Intent i = new Intent(Constants.ACTION.PLAY_ACTION);
                 sendBroadcast(i);
 
             } else if (intent.getAction().equals(Constants.ACTION.PAUSE_ACTION)) {
-                playPause = 1;
-                stopReplay = 1;
-                updateNotification(playPause,stopReplay, playPauseEnabled, stopReplayEnabled);
+                playPause = PLAY;
+                stopReplay = REPLAY;
+                updateNotification();
                 Intent i = new Intent(Constants.ACTION.PAUSE_ACTION);
                 sendBroadcast(i);
 
             } else if (intent.getAction().equals(Constants.ACTION.RESET_ACTION)) {
-                updateNotification(playPause,stopReplay, playPauseEnabled, stopReplayEnabled);
+                updateNotification();
                 Intent i = new Intent(Constants.ACTION.RESET_ACTION);
                 sendBroadcast(i);
 
@@ -77,48 +81,52 @@ public class NotificationService extends Service {
                 stopSelf();
 
             } else if (intent.getAction().equals( Constants.ACTION.SEND_STOP_ACTION)) {
-                stopReplay = 1;
-                updateNotification(playPause,stopReplay, playPauseEnabled, stopReplayEnabled);
+                stopReplay = REPLAY;
+                updateNotification();
 
             } else if (intent.getAction().equals( Constants.ACTION.SEND_REPLAY_ACTION)) {
-                stopReplay = 0;
-                updateNotification(playPause,stopReplay, playPauseEnabled, stopReplayEnabled);
+                stopReplay = STOP;
+                updateNotification();
 
             } else if (intent.getAction().equals( Constants.ACTION.SEND_PLAY_ACTION)) {
-                playPause = 0;
-                updateNotification(playPause,stopReplay, playPauseEnabled, stopReplayEnabled);
+                playPause = PAUSE;
+                stopReplay = STOP;
+                updateNotification();
 
             } else if (intent.getAction().equals( Constants.ACTION.SEND_PAUSE_ACTION)) {
-                playPause = 1;
-                stopReplay = 1;
-                updateNotification(playPause,stopReplay, playPauseEnabled, stopReplayEnabled);
+                playPause = PLAY;
+                stopReplay = REPLAY;
+                updateNotification();
 
             } else if (intent.getAction().equals( Constants.ACTION.SEND_RESET_ACTION)) {
-                updateNotification(playPause,stopReplay, playPauseEnabled, stopReplayEnabled);
+                updateNotification();
 
             } else if (intent.getAction().equals( Constants.ACTION.DISABLE_PLAY_PAUSE)) {
-                playPauseEnabled = 1;
-                updateNotification(playPause,stopReplay, playPauseEnabled, stopReplayEnabled);
+                playPauseEnabled = DISABLE;
+                updateNotification();
+                Toast.makeText(this, "Received DISABLE_PLAY_PAUSE", Toast.LENGTH_SHORT).show();
 
             } else if (intent.getAction().equals( Constants.ACTION.DISABLE_STOP_REPLAY)) {
-                stopReplayEnabled = 1;
-                updateNotification(playPause,stopReplay, playPauseEnabled, stopReplayEnabled);
+                stopReplayEnabled = DISABLE;
+                updateNotification();
+                Toast.makeText(this, "Received DISABLE_STOP_REPLAY", Toast.LENGTH_SHORT).show();
 
             } else if (intent.getAction().equals( Constants.ACTION.ENABLE_PLAY_PAUSE)) {
-                playPauseEnabled = 0;
-                updateNotification(playPause,stopReplay, playPauseEnabled, stopReplayEnabled);
+                playPauseEnabled = ENABLE;
+                updateNotification();
+                Toast.makeText(this, "Received ENABLE_PLAY_PAUSE", Toast.LENGTH_SHORT).show();
 
             } else if (intent.getAction().equals( Constants.ACTION.ENABLE_STOP_REPLAY)) {
-                stopReplayEnabled = 0;
-                updateNotification(playPause,stopReplay, playPauseEnabled, stopReplayEnabled);
-
+                stopReplayEnabled = ENABLE;
+                updateNotification();
+                Toast.makeText(this, "Received ENABLE_STOP_REPLAY", Toast.LENGTH_SHORT).show();
             }
         return START_STICKY;
     }
     Notification status;
 
     //Update the notification and show either play or pause button
-    private void updateNotification(int playPause, int stopReplay, int playPauseEnabled, int stopReplayEnabled) {
+    private void updateNotification() {
 
         // Using RemoteViews to bind custom layouts into Notification
         RemoteViews views = new RemoteViews(getPackageName(),
@@ -145,21 +153,21 @@ public class NotificationService extends Service {
 
         //check if play/pause button is enabled then check whether it should be played or paused
         PendingIntent pplayIntent = PendingIntent.getActivity(getApplicationContext(), 0, new Intent(), 0);
-        if (playPauseEnabled == 0) {
+        if (playPauseEnabled == ENABLE) {
             Intent playIntent = new Intent(this, NotificationService.class);
-            if (playPause == 0) {
+            if (playPause == PAUSE) {
                 playIntent.setAction(Constants.ACTION.PAUSE_ACTION);
-            } else if (playPause == 1) {
+            } else if (playPause == PLAY) {
                 playIntent.setAction(Constants.ACTION.PLAY_ACTION);
             }
             pplayIntent = PendingIntent.getService(this, 0,
                     playIntent, 0);
 
-        } else if (playPauseEnabled == 1) {
+        } else if (playPauseEnabled == DISABLE) {
             Intent playIntent = new Intent(this, NotificationService.class);
-            if (playPause == 0) {
+            if (playPause == PAUSE) {
                 playIntent.setAction(Constants.ACTION.BLANK_ACTION);
-            } else if (playPause == 1) {
+            } else if (playPause == PLAY) {
                 playIntent.setAction(Constants.ACTION.BLANK_ACTION);
             }
             pplayIntent = PendingIntent.getService(this, 0,
@@ -168,20 +176,20 @@ public class NotificationService extends Service {
 
         //check if stop/replay button is enabled then check whether it should be stopped or replayed
         PendingIntent pstopIntent = PendingIntent.getActivity(getApplicationContext(), 0, new Intent(), 0);
-        if (stopReplayEnabled == 0) {
+        if (stopReplayEnabled == ENABLE) {
             Intent stopIntent = new Intent(this, NotificationService.class);
-            if (stopReplay == 0) {
+            if (stopReplay == STOP) {
                 stopIntent.setAction(Constants.ACTION.STOP_ACTION);
-            } else if (stopReplay == 1) {
+            } else if (stopReplay == REPLAY) {
                 stopIntent.setAction(Constants.ACTION.REPLAY_ACTION);
             }
             pstopIntent = PendingIntent.getService(this, 0,
                     stopIntent, 0);
-        } else if (playPauseEnabled == 1) {
+        } else if (playPauseEnabled == DISABLE) {
             Intent stopIntent = new Intent(this, NotificationService.class);
-            if (stopReplay == 0) {
+            if (stopReplay == STOP) {
                 stopIntent.setAction(Constants.ACTION.BLANK_ACTION);
-            } else if (stopReplay == 1) {
+            } else if (stopReplay == REPLAY) {
                 stopIntent.setAction(Constants.ACTION.BLANK_ACTION);
             }
             pstopIntent = PendingIntent.getService(this, 0,
@@ -198,25 +206,25 @@ public class NotificationService extends Service {
         bigViews.setOnClickPendingIntent(R.id.status_bar_reset, presetIntent);
 
         //check if play/pause button is enabled and set corresponding image for button
-        if (playPauseEnabled == 0) {
-            if (playPause == 0) {
+        if (playPauseEnabled == ENABLE) {
+            if (playPause == PAUSE) {
                 views.setImageViewResource(R.id.status_bar_play,
                         R.drawable.ic_pause);
                 bigViews.setImageViewResource(R.id.status_bar_play,
                         R.drawable.ic_pause);
-            } else if (playPause == 1) {
+            } else if (playPause == PLAY) {
                 views.setImageViewResource(R.id.status_bar_play,
                         R.drawable.ic_play);
                 bigViews.setImageViewResource(R.id.status_bar_play,
                         R.drawable.ic_play);
             }
-        } else if (playPauseEnabled == 1) {
-            if (playPause == 0) {
+        } else if (playPauseEnabled == DISABLE) {
+            if (playPause == PAUSE) {
                 views.setImageViewResource(R.id.status_bar_play,
                         R.drawable.ic_pause_disabled);
                 bigViews.setImageViewResource(R.id.status_bar_play,
                         R.drawable.ic_pause_disabled);
-            } else if (playPause == 1) {
+            } else if (playPause == PLAY) {
                 views.setImageViewResource(R.id.status_bar_play,
                         R.drawable.ic_play_disabled);
                 bigViews.setImageViewResource(R.id.status_bar_play,
@@ -225,25 +233,25 @@ public class NotificationService extends Service {
         }
 
         //check if stop/replay button is enabled and set corresponding image for button
-        if (stopReplayEnabled == 0) {
-            if (stopReplay == 0) {
+        if (stopReplayEnabled == ENABLE) {
+            if (stopReplay == STOP) {
                 views.setImageViewResource(R.id.status_bar_stop,
                         R.drawable.ic_stop);
                 bigViews.setImageViewResource(R.id.status_bar_stop,
                         R.drawable.ic_stop);
-            } else if (stopReplay == 1) {
+            } else if (stopReplay == REPLAY) {
                 views.setImageViewResource(R.id.status_bar_stop,
                         R.drawable.ic_replay);
                 bigViews.setImageViewResource(R.id.status_bar_stop,
                         R.drawable.ic_replay);
             }
-        } else if (stopReplayEnabled == 1){
-            if (stopReplay == 0) {
+        } else if (stopReplayEnabled == DISABLE){
+            if (stopReplay == STOP) {
                 views.setImageViewResource(R.id.status_bar_stop,
                         R.drawable.ic_stop_disabled);
                 bigViews.setImageViewResource(R.id.status_bar_stop,
                         R.drawable.ic_stop_disabled);
-            } else if (stopReplay == 1) {
+            } else if (stopReplay == REPLAY) {
                 views.setImageViewResource(R.id.status_bar_stop,
                         R.drawable.ic_replay_disabled);
                 bigViews.setImageViewResource(R.id.status_bar_stop,
