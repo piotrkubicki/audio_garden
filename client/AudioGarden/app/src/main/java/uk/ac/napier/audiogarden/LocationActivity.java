@@ -231,8 +231,12 @@ public class LocationActivity extends AppCompatActivity {
     }
 
     private void stopScanner(AnimMode mode) {
-        mLEScanner.stopScan(mScanCallback);
-        stopAnimation(mode);
+        try {
+            mLEScanner.stopScan(mScanCallback);
+            stopAnimation(mode);
+        } catch (NullPointerException e) {
+            return;
+        }
     }
 
     private void checkBluetoothState() {
@@ -445,8 +449,12 @@ public class LocationActivity extends AppCompatActivity {
     }
 
     private void fadeStep(float deltaVolume) {
-        bgMP.setVolume(volume, volume);
-        volume += deltaVolume;
+        try {
+            bgMP.setVolume(volume, volume);
+            volume += deltaVolume;
+        } catch (IllegalStateException e) {
+            return;
+        }
     }
 
     private ScanCallback mScanCallback = new ScanCallback() {
