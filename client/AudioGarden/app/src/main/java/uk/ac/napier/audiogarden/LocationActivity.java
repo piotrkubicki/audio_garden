@@ -239,11 +239,11 @@ public class LocationActivity extends AppCompatActivity {
     }
 
     private  void runScanner() {
-        Log.e("filters", "filters size " + scanFilters.size());
         if (scanFilters.size() < 1) {
             stopScanner(AnimMode.NO_MORE_DEVICES);
             return;
         }
+
         mLEScanner.startScan(null, scanSettings, mScanCallback);
         startAnimation();
     }
@@ -669,11 +669,17 @@ public class LocationActivity extends AppCompatActivity {
         bgMP.stop();
         runScanner();
 
-        FloatingActionButton btn = (FloatingActionButton) findViewById(R.id.stop_replay_btn);
-        btn.setImageDrawable(getDrawable(R.drawable.ic_replay_black_52dp));
+        FloatingActionButton replayBtn = (FloatingActionButton) findViewById(R.id.stop_replay_btn);
+        replayBtn.setImageDrawable(getDrawable(R.drawable.ic_replay_black_52dp));
+        FloatingActionButton playBtn = (FloatingActionButton) findViewById(R.id.pause_play_btn);
+        playBtn.setEnabled(false);
 
         serviceIntent = new Intent(LocationActivity.this, NotificationService.class);
         serviceIntent.setAction(Constants.ACTION.SEND_STOP_ACTION);
+        startService(serviceIntent);
+
+        serviceIntent = new Intent(LocationActivity.this, NotificationService.class);
+        serviceIntent.setAction(Constants.ACTION.DISABLE_PLAY_PAUSE);
         startService(serviceIntent);
     }
 
