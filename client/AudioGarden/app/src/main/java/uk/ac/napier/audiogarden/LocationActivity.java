@@ -219,12 +219,16 @@ public class LocationActivity extends AppCompatActivity {
 
         if (bgMP.isPlaying()) {
             bgMP.stop();
+            bgMP.reset();
             bgMP.release();
+            bgMP = null;
         }
 
         if (vMP.isPlaying()) {
             vMP.stop();
+            vMP.reset();
             vMP.release();
+            vMP = null;
         }
 
         serviceIntent = new Intent(LocationActivity.this, NotificationService.class);
