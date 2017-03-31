@@ -195,6 +195,7 @@ public class LocationActivity extends AppCompatActivity {
         });
         setLocation();
         setupReceiver();
+        startService();
         setView();
         checkBluetoothState(); // check if bluetooth available
         playIntro(bgMP, Integer.toString(location.getId()));
@@ -256,6 +257,7 @@ public class LocationActivity extends AppCompatActivity {
     private void setupReceiver() {
         IntentFilter filter = new IntentFilter();
         filter.addAction(Constants.ACTION.STOP_ACTION);
+        filter.addAction(Constants.ACTION.REPLAY_ACTION);
         filter.addAction(Constants.ACTION.PLAY_ACTION);
         filter.addAction(Constants.ACTION.PAUSE_ACTION);
         filter.addAction(Constants.ACTION.RESET_ACTION);
@@ -265,12 +267,14 @@ public class LocationActivity extends AppCompatActivity {
                 String action = intent.getAction();
                 if (action.equals(Constants.ACTION.STOP_ACTION)) {
                     stopSounds();
+                } else if (action.equals(Constants.ACTION.REPLAY_ACTION)) {
+                    replaySounds();
                 } else if (action.equals(Constants.ACTION.PLAY_ACTION)) {
                     resumeSounds();
                 } else if (action.equals(Constants.ACTION.PAUSE_ACTION)) {
                     pauseSounds();
                 } else if (action.equals(Constants.ACTION.RESET_ACTION)) {
-                    replaySounds();
+                    restartLocation();
                 }
             }
         };
@@ -476,7 +480,6 @@ public class LocationActivity extends AppCompatActivity {
             if (inRange) {
                 if (volume <= 0 || volume >= 1) {
                     scanFilters.remove(newId); // remove currently played device from list
-                    startService();
                     resetNoiseFilter();
                     lastTrack = newId;
                     playTracks(bgMP, vMP, Integer.toString(location.getId()), newId, AnimMode.FOUND);
@@ -508,7 +511,6 @@ public class LocationActivity extends AppCompatActivity {
     //stop ripple animation
 
     public void stopAnimation(AnimMode mode) {
-        startService();
         final RippleBackground rippleBackground=(RippleBackground)findViewById(R.id.scanning);
         foundDevice();
         rippleBackground.stopRippleAnimation();
@@ -606,6 +608,11 @@ public class LocationActivity extends AppCompatActivity {
         playBtn.setImageDrawable(getDrawable(R.drawable.ic_play_arrow_black_52dp));
         FloatingActionButton resumeBtn = (FloatingActionButton) findViewById(R.id.stop_replay_btn);
         resumeBtn.setImageDrawable(getDrawable(R.drawable.ic_replay_black_52dp));
+
+
+        serviceIntent = new Intent(LocationActivity.this, NotificationService.class);
+        serviceIntent.setAction(Constants.ACTION.SEND_PAUSE_ACTION);
+        startService(serviceIntent);
     }
 
     private void resumeSounds() {
@@ -620,6 +627,10 @@ public class LocationActivity extends AppCompatActivity {
         pauseBtn.setImageDrawable(getDrawable(R.drawable.ic_pause_black_52dp));
         FloatingActionButton stopBtn = (FloatingActionButton) findViewById(R.id.stop_replay_btn);
         stopBtn.setImageDrawable(getDrawable(R.drawable.ic_stop_black_52dp));
+
+        serviceIntent = new Intent(LocationActivity.this, NotificationService.class);
+        serviceIntent.setAction(Constants.ACTION.SEND_PLAY_ACTION);
+        startService(serviceIntent);
     }
 
     private void stopSounds() {
@@ -629,6 +640,10 @@ public class LocationActivity extends AppCompatActivity {
 
         FloatingActionButton btn = (FloatingActionButton) findViewById(R.id.stop_replay_btn);
         btn.setImageDrawable(getDrawable(R.drawable.ic_replay_black_52dp));
+
+        serviceIntent = new Intent(LocationActivity.this, NotificationService.class);
+        serviceIntent.setAction(Constants.ACTION.SEND_STOP_ACTION);
+        startService(serviceIntent);
     }
 
     private void replaySounds() {
@@ -639,10 +654,17 @@ public class LocationActivity extends AppCompatActivity {
             btn.setImageDrawable(getDrawable(R.drawable.ic_stop_black_52dp));
             FloatingActionButton pauseBtn = (FloatingActionButton) findViewById(R.id.pause_play_btn);
             pauseBtn.setImageDrawable(getDrawable(R.drawable.ic_pause_black_52dp));
+
+            serviceIntent = new Intent(LocationActivity.this, NotificationService.class);
+            serviceIntent.setAction(Constants.ACTION.SEND_REPLAY_ACTION);
+            startService(serviceIntent);
         }
     }
 
     private void restartLocation() {
         setLocation();
+        serviceIntent = new Intent(LocationActivity.this, NotificationService.class);
+        serviceIntent.setAction(Constants.ACTION.SEND_RESET_ACTION);
+        startService(serviceIntent);
     }
 }

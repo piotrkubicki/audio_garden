@@ -34,34 +34,61 @@ public class NotificationService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
 
+        int playPause = 0;
+        int stopReplay = 0;
+
             if (intent.getAction().equals(Constants.ACTION.STARTFOREGROUND_ACTION)) {
-                updateNotification(1);
+                updateNotification(playPause,stopReplay);
             } else if (intent.getAction().equals(Constants.ACTION.STOP_ACTION)) {
-                updateNotification(0);
+                stopReplay = 1;
+                updateNotification(playPause,stopReplay);
                 Intent i = new Intent(Constants.ACTION.STOP_ACTION);
                 sendBroadcast(i);
+            } else if (intent.getAction().equals(Constants.ACTION.REPLAY_ACTION)) {
+                stopReplay = 0;
+                updateNotification(playPause,stopReplay);
+                Intent i = new Intent(Constants.ACTION.REPLAY_ACTION);
+                sendBroadcast(i);
             } else if (intent.getAction().equals(Constants.ACTION.PLAY_ACTION)) {
-                updateNotification(1);
+                playPause = 0;
+                updateNotification(playPause,stopReplay);
                 Intent i = new Intent(Constants.ACTION.PLAY_ACTION);
                 sendBroadcast(i);
             } else if (intent.getAction().equals(Constants.ACTION.PAUSE_ACTION)) {
-                updateNotification(0);
+                playPause = 1;
+                stopReplay = 1;
+                updateNotification(playPause,stopReplay);
                 Intent i = new Intent(Constants.ACTION.PAUSE_ACTION);
                 sendBroadcast(i);
             } else if (intent.getAction().equals(Constants.ACTION.RESET_ACTION)) {
-                updateNotification(1);
+                updateNotification(playPause,stopReplay);
                 Intent i = new Intent(Constants.ACTION.RESET_ACTION);
                 sendBroadcast(i);
             } else if (intent.getAction().equals( Constants.ACTION.STOPFOREGROUND_ACTION)) {
                 stopForeground(true);
                 stopSelf();
+            } else if (intent.getAction().equals( Constants.ACTION.SEND_STOP_ACTION)) {
+                stopReplay = 1;
+                updateNotification(playPause,stopReplay);
+            } else if (intent.getAction().equals( Constants.ACTION.SEND_REPLAY_ACTION)) {
+                stopReplay = 0;
+                updateNotification(playPause,stopReplay);
+            } else if (intent.getAction().equals( Constants.ACTION.SEND_PLAY_ACTION)) {
+                playPause = 0;
+                updateNotification(playPause,stopReplay);
+            } else if (intent.getAction().equals( Constants.ACTION.SEND_PAUSE_ACTION)) {
+                playPause = 1;
+                stopReplay = 1;
+                updateNotification(playPause,stopReplay);
+            } else if (intent.getAction().equals( Constants.ACTION.SEND_RESET_ACTION)) {
+                updateNotification(playPause,stopReplay);
             }
         return START_STICKY;
     }
     Notification status;
 
     //Update the notification and show either play or pause button
-    private void updateNotification(int playPause) {
+    private void updateNotification(int playPause, int stopReplay) {
         // Using RemoteViews to bind custom layouts into Notification
         RemoteViews views = new RemoteViews(getPackageName(),
                 R.layout.status_bar);
@@ -86,16 +113,21 @@ public class NotificationService extends Service {
                 resetIntent, 0);
 
         Intent playIntent = new Intent(this, NotificationService.class);
-        if(playPause == 1) {
+        if(playPause == 0) {
             playIntent.setAction(Constants.ACTION.PAUSE_ACTION);
-        } else if (playPause == 0) {
+        } else if (playPause == 1) {
             playIntent.setAction(Constants.ACTION.PLAY_ACTION);
         }
         PendingIntent pplayIntent = PendingIntent.getService(this, 0,
                 playIntent, 0);
 
         Intent stopIntent = new Intent(this, NotificationService.class);
-        stopIntent.setAction(Constants.ACTION.STOP_ACTION);
+        if(stopReplay == 0) {
+            stopIntent.setAction(Constants.ACTION.STOP_ACTION);
+        }
+        else if(stopReplay == 1) {
+            stopIntent.setAction(Constants.ACTION.REPLAY_ACTION);
+        }
         PendingIntent pstopIntent = PendingIntent.getService(this, 0,
                 stopIntent, 0);;
 
@@ -108,16 +140,28 @@ public class NotificationService extends Service {
         views.setOnClickPendingIntent(R.id.status_bar_reset, presetIntent);
         bigViews.setOnClickPendingIntent(R.id.status_bar_reset, presetIntent);
 
-        if(playPause == 1) {
+        if(playPause == 0) {
             views.setImageViewResource(R.id.status_bar_play,
                     R.drawable.ic_pause);
             bigViews.setImageViewResource(R.id.status_bar_play,
                     R.drawable.ic_pause);
-        } else if (playPause == 0){
+        } else if (playPause == 1){
             views.setImageViewResource(R.id.status_bar_play,
                     R.drawable.ic_play);
             bigViews.setImageViewResource(R.id.status_bar_play,
                     R.drawable.ic_play);
+        }
+
+        if(stopReplay == 0) {
+            views.setImageViewResource(R.id.status_bar_stop,
+                    R.drawable.ic_stop);
+            bigViews.setImageViewResource(R.id.status_bar_stop,
+                    R.drawable.ic_stop);
+        } else if (stopReplay == 1){
+            views.setImageViewResource(R.id.status_bar_stop,
+                    R.drawable.ic_replay);
+            bigViews.setImageViewResource(R.id.status_bar_stop,
+                    R.drawable.ic_replay);
         }
 
         int currentapiVersion = Build.VERSION.SDK_INT;
