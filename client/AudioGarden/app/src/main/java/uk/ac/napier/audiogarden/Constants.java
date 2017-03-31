@@ -23,6 +23,10 @@ public class Constants {
         String SEND_PAUSE_ACTION = "uk.ac.napier.audiogarden.action.sendpause";
         String SEND_RESET_ACTION = "uk.ac.napier.audiogarden.action.sendreset";
         String SEND_REPLAY_ACTION = "uk.ac.napier.audiogarden.action.sendreplay";
+        String DISABLE_PLAY_PAUSE = "uk.ac.napier.audiogarden.action.disableplaypause";
+        String DISABLE_STOP_REPLAY = "uk.ac.napier.audiogarden.action.disablestopreplay";
+        String ENABLE_PLAY_PAUSE = "uk.ac.napier.audiogarden.action.enableplaypause";
+        String ENABLE_STOP_REPLAY = "uk.ac.napier.audiogarden.action.enablestopreplay";
         String STARTFOREGROUND_ACTION = "uk.ac.napier.audiogarden.action.startforeground";
         String STOPFOREGROUND_ACTION = "uk.ac.napier.audiogarden.action.stopforeground";
 
