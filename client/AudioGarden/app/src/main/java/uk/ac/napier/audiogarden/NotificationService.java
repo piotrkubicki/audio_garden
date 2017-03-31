@@ -104,22 +104,18 @@ public class NotificationService extends Service {
             } else if (intent.getAction().equals( Constants.ACTION.DISABLE_PLAY_PAUSE)) {
                 playPauseEnabled = DISABLE;
                 updateNotification();
-                Toast.makeText(this, "Received DISABLE_PLAY_PAUSE", Toast.LENGTH_SHORT).show();
 
             } else if (intent.getAction().equals( Constants.ACTION.DISABLE_STOP_REPLAY)) {
                 stopReplayEnabled = DISABLE;
                 updateNotification();
-                Toast.makeText(this, "Received DISABLE_STOP_REPLAY", Toast.LENGTH_SHORT).show();
 
             } else if (intent.getAction().equals( Constants.ACTION.ENABLE_PLAY_PAUSE)) {
                 playPauseEnabled = ENABLE;
                 updateNotification();
-                Toast.makeText(this, "Received ENABLE_PLAY_PAUSE", Toast.LENGTH_SHORT).show();
 
             } else if (intent.getAction().equals( Constants.ACTION.ENABLE_STOP_REPLAY)) {
                 stopReplayEnabled = ENABLE;
                 updateNotification();
-                Toast.makeText(this, "Received ENABLE_STOP_REPLAY", Toast.LENGTH_SHORT).show();
             }
         return START_STICKY;
     }
