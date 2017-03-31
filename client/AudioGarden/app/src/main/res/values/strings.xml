@@ -40,7 +40,8 @@
     <string name="strFound">Beacon found! Playing&#8230;</string>
     <string name="strReplay">Replaying the sounds!</string>
     <string name="strPaused">Pausing!</string>
-
+    <string name="strPlay">Playing!</string>
+    <string name="strRestartLoc">No more devices. Please use reset button!</string>
 
     <!-- Strings related to Notification Bar -->
     <string name="cd_repeat">Reset the audio for all beacons</string>

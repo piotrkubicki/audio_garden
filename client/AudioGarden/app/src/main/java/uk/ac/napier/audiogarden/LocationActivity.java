@@ -98,7 +98,7 @@ public class LocationActivity extends AppCompatActivity {
     private BroadcastReceiver receiver;
 
     public enum AnimMode {
-        FOUND, REPLAY, PAUSE, DESTROY
+        FOUND, REPLAY, PAUSE, DESTROY, PLAY, NO_MORE_DEVICES
     }
 
     @Override
@@ -243,6 +243,11 @@ public class LocationActivity extends AppCompatActivity {
     }
 
     private  void runScanner() {
+        if (scanFilters.size() < 1) {
+            stopScanner(AnimMode.NO_MORE_DEVICES);
+            return;
+        }
+
         mLEScanner.startScan(null, scanSettings, mScanCallback);
         startAnimation();
     }
@@ -545,6 +550,10 @@ public class LocationActivity extends AppCompatActivity {
             text.setText(R.string.strReplay);
         } else if (mode == AnimMode.PAUSE) {
             text.setText(R.string.strPaused);
+        } else if (mode == AnimMode.PLAY) {
+            text.setText(R.string.strPlay);
+        } else if (mode == AnimMode.NO_MORE_DEVICES) {
+            text.setText(R.string.strRestartLoc);
         }
     }
 
@@ -584,26 +593,28 @@ public class LocationActivity extends AppCompatActivity {
 
 
     private boolean calculateDistance(float txPower, double rssi, String transmitterId) {
-        double distance = 0;
 
         if (rssi == 0) {
             return false;
         }
-
-        noiseFilter.get(transmitterId).add(rssi);
+        
         List<Double> samples = noiseFilter.get(transmitterId);
 
-        if (samples.size() == 10) {
-            double sum = 0;
-            for (Double sample : samples) {
-                sum += sample;
-            }
+        if (samples != null) {
+            samples.add(rssi);
 
-            double resDistance = sum / samples.size();
-            Toast.makeText(getApplicationContext(), Double.toString(resDistance), Toast.LENGTH_SHORT).show();
-            noiseFilter.get(transmitterId).clear();
-            Log.e("distance", Double.toString(resDistance));
-            return resDistance > maxDistance;
+            if (samples.size() == 10) {
+                double sum = 0;
+                for (Double sample : samples) {
+                    sum += sample;
+                }
+
+                double resDistance = sum / samples.size();
+                Toast.makeText(getApplicationContext(), Double.toString(resDistance), Toast.LENGTH_SHORT).show();
+                noiseFilter.get(transmitterId).clear();
+
+                return resDistance > maxDistance;
+            }
         }
 
         return false;
@@ -611,12 +622,8 @@ public class LocationActivity extends AppCompatActivity {
 
     // remove distance samples for each transmitter
     private void resetNoiseFilter() {
-        Iterator it = noiseFilter.entrySet().iterator();
-
-        while (it.hasNext()) {
-            Map.Entry pair = (Map.Entry)it.next();
-            pair.setValue(new ArrayList<Double>());
-            it.remove();
+        for (List<Double> l : noiseFilter.values()) {
+            l.clear();
         }
     }
 
@@ -644,7 +651,12 @@ public class LocationActivity extends AppCompatActivity {
 
         bgMP.start();
         vMP.start();
-        runScanner();
+
+        if (vMP.isPlaying()) {
+            stopScanner(AnimMode.PLAY);
+        } else {
+            runScanner();
+        }
 
         FloatingActionButton pauseBtn = (FloatingActionButton) findViewById(R.id.pause_play_btn);
         pauseBtn.setImageDrawable(getDrawable(R.drawable.ic_pause_black_52dp));
@@ -661,11 +673,17 @@ public class LocationActivity extends AppCompatActivity {
         bgMP.stop();
         runScanner();
 
-        FloatingActionButton btn = (FloatingActionButton) findViewById(R.id.stop_replay_btn);
-        btn.setImageDrawable(getDrawable(R.drawable.ic_replay_black_52dp));
+        FloatingActionButton replayBtn = (FloatingActionButton) findViewById(R.id.stop_replay_btn);
+        replayBtn.setImageDrawable(getDrawable(R.drawable.ic_replay_black_52dp));
+        FloatingActionButton playBtn = (FloatingActionButton) findViewById(R.id.pause_play_btn);
+        playBtn.setEnabled(false);
 
         serviceIntent = new Intent(LocationActivity.this, NotificationService.class);
         serviceIntent.setAction(Constants.ACTION.SEND_STOP_ACTION);
+        startService(serviceIntent);
+
+        serviceIntent = new Intent(LocationActivity.this, NotificationService.class);
+        serviceIntent.setAction(Constants.ACTION.DISABLE_PLAY_PAUSE);
         startService(serviceIntent);
     }
 
@@ -689,5 +707,6 @@ public class LocationActivity extends AppCompatActivity {
         serviceIntent = new Intent(LocationActivity.this, NotificationService.class);
         serviceIntent.setAction(Constants.ACTION.SEND_RESET_ACTION);
         startService(serviceIntent);
+        runScanner();
     }
 }
