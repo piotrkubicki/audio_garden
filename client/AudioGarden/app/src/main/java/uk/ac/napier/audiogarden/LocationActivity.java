@@ -111,6 +111,9 @@ public class LocationActivity extends AppCompatActivity {
         final BluetoothManager bluetoothManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
         bluetoothAdapter = bluetoothManager.getAdapter();
 
+        setupReceiver();
+        startService();
+
         bgMP= new MediaPlayer();
         vMP = new MediaPlayer();
 
@@ -137,7 +140,14 @@ public class LocationActivity extends AppCompatActivity {
                         // allow background sound build up and run voice media player
                         mp.wait(FADE_DURATION + 1000);
                         mp.start();
+                        serviceIntent = new Intent(LocationActivity.this, NotificationService.class);
+                        serviceIntent.setAction(Constants.ACTION.ENABLE_STOP_REPLAY);
+                        startService(serviceIntent);
                         stopReplayBtn.setEnabled(true);
+
+                        serviceIntent = new Intent(LocationActivity.this, NotificationService.class);
+                        serviceIntent.setAction(Constants.ACTION.ENABLE_PLAY_PAUSE);
+                        startService(serviceIntent);
                         pausePlayBtn.setEnabled(true);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
@@ -169,6 +179,10 @@ public class LocationActivity extends AppCompatActivity {
             }
         });
 
+        serviceIntent = new Intent(LocationActivity.this, NotificationService.class);
+        serviceIntent.setAction(Constants.ACTION.DISABLE_STOP_REPLAY);
+        startService(serviceIntent);
+
         stopReplayBtn = (FloatingActionButton) findViewById(R.id.stop_replay_btn);
         stopReplayBtn.setImageDrawable(getDrawable(R.drawable.ic_replay_black_52dp));
         stopReplayBtn.setBackgroundTintList(ContextCompat.getColorStateList(getApplicationContext(), R.color.fab_ripple_color));
@@ -194,8 +208,6 @@ public class LocationActivity extends AppCompatActivity {
             }
         });
         setLocation();
-        setupReceiver();
-        startService();
         setView();
         checkBluetoothState(); // check if bluetooth available
         playIntro(bgMP, Integer.toString(location.getId()));
@@ -381,7 +393,14 @@ public class LocationActivity extends AppCompatActivity {
     private void playTracks(MediaPlayer backgroundMP, MediaPlayer voiceMP, String locationID, String transmitterID, AnimMode animMode) {
         String path = getString(R.string.base_url) + "locations/" + locationID + "/"+ transmitterID;
         stopScanner(animMode);
+        serviceIntent = new Intent(LocationActivity.this, NotificationService.class);
+        serviceIntent.setAction(Constants.ACTION.DISABLE_PLAY_PAUSE);
+        startService(serviceIntent);
         pausePlayBtn.setEnabled(false); //prevent user from stop until voice mp ready
+
+        serviceIntent = new Intent(LocationActivity.this, NotificationService.class);
+        serviceIntent.setAction(Constants.ACTION.DISABLE_STOP_REPLAY);
+        startService(serviceIntent);
         stopReplayBtn.setEnabled(false);
 
         try {
