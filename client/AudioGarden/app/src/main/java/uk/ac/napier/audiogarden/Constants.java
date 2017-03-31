@@ -15,7 +15,14 @@ public class Constants {
         String STOP_ACTION = "uk.ac.napier.audiogarden.action.stop";
         String PLAY_ACTION = "uk.ac.napier.audiogarden.action.play";
         String PAUSE_ACTION = "uk.ac.napier.audiogarden.action.pause";
-        String RESET_ACTION = "uk.ac.napier.audiogarden.action.RESET";
+        String RESET_ACTION = "uk.ac.napier.audiogarden.action.reset";
+        String REPLAY_ACTION = "uk.ac.napier.audiogarden.action.replay";
+        String BLANK_ACTION = "uk.ac.napier.audiogarden.action.blank";
+        String SEND_STOP_ACTION = "uk.ac.napier.audiogarden.action.sendstop";
+        String SEND_PLAY_ACTION = "uk.ac.napier.audiogarden.action.sendplay";
+        String SEND_PAUSE_ACTION = "uk.ac.napier.audiogarden.action.sendpause";
+        String SEND_RESET_ACTION = "uk.ac.napier.audiogarden.action.sendreset";
+        String SEND_REPLAY_ACTION = "uk.ac.napier.audiogarden.action.sendreplay";
         String STARTFOREGROUND_ACTION = "uk.ac.napier.audiogarden.action.startforeground";
         String STOPFOREGROUND_ACTION = "uk.ac.napier.audiogarden.action.stopforeground";
 

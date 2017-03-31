@@ -27,15 +27,6 @@
         android:showDividers="middle"
         android:dividerPadding="12.0dip">
         <ImageButton
-            android:id="@+id/status_bar_reset"
-            android:padding="10.0dip"
-            android:layout_width="0.0dip"
-            android:layout_height="@dimen/play_controls_notification"
-            android:src="@drawable/ic_reset"
-            android:scaleType="fitCenter"
-            android:layout_weight="1.0"
-            android:background="@color/notification_material_background_media_default_color"/>
-        <ImageButton
             android:id="@+id/status_bar_play"
             android:padding="10.0dip"
             android:layout_width="0.0dip"
@@ -49,6 +40,15 @@
             android:layout_width="0.0dip"
             android:layout_height="@dimen/play_controls_notification"
             android:src="@drawable/ic_stop"
+            android:scaleType="fitCenter"
+            android:layout_weight="1.0"
+            android:background="@color/notification_material_background_media_default_color"/>
+        <ImageButton
+            android:id="@+id/status_bar_reset"
+            android:padding="10.0dip"
+            android:layout_width="0.0dip"
+            android:layout_height="@dimen/play_controls_notification"
+            android:src="@drawable/ic_restore"
             android:scaleType="fitCenter"
             android:layout_weight="1.0"
             android:background="@color/notification_material_background_media_default_color"/>

@@ -7,7 +7,7 @@
     <item>
         <bitmap
             android:gravity="center"
-            android:src="@mipmap/napier_logo"/>
+            android:src="@drawable/napier_logo"/>
     </item>
 
 </layer-list>
