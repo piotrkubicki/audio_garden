@@ -481,11 +481,13 @@ public class LocationActivity extends AppCompatActivity {
     }
 
     private void fadeStep(float deltaVolume) {
-        try {
-            bgMP.setVolume(volume, volume);
-            volume += deltaVolume;
-        } catch (IllegalStateException e) {
-            return;
+        if (bgMP != null) {
+            try {
+                bgMP.setVolume(volume, volume);
+                volume += deltaVolume;
+            } catch (IllegalStateException e) {
+                return;
+            }
         }
     }
 
