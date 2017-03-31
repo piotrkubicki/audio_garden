@@ -2,6 +2,7 @@
 
     <string name="app_name">BLE Beacon App</string>
     <string name="title_activity_location">Location</string>
+    <string name="title_activity_locations">Locations</string>
     <string name="base_url">http://audiogarden.t6iqccz7ds.eu-west-2.elasticbeanstalk.com/</string>
     <string name="title_activity_map">Map</string>
     <string name="locations_storage">locations_pref</string>
