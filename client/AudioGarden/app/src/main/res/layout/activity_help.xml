@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main_content"
     android:layout_width="match_parent"
@@ -8,10 +7,48 @@
     android:fitsSystemWindows="true"
     tools:context="uk.ac.napier.audiogarden.HelpActivity">
 
-    <android.support.v4.view.ViewPager
-        android:id="@+id/container"
+    <Switch
+        android:id="@+id/switch_guide_all"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+        android:layout_height="wrap_content"
+        android:paddingRight="@dimen/help_screen_switch_padding_width"
+        android:paddingLeft="@dimen/help_screen_switch_padding_width"
+        android:paddingTop="@dimen/help_screen_switch_padding_height"
+        android:text="@string/guide_help_all_screens_switch_text"
+        android:textStyle="bold"
+        android:textSize="@dimen/help_screen_switch_text_size" />
 
-</android.support.design.widget.CoordinatorLayout>
+    <Switch
+        android:id="@+id/switch_guide_main"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingRight="@dimen/help_screen_switch_padding_width"
+        android:paddingLeft="@dimen/help_screen_switch_padding_width"
+        android:paddingTop="@dimen/help_screen_switch_padding_height"
+        android:layout_below="@+id/switch_guide_all"
+        android:text="@string/guide_help_main_screen_switch_text"
+        android:textSize="@dimen/help_screen_switch_text_size" />
+
+    <Switch
+        android:id="@+id/switch_guide_locations"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingRight="@dimen/help_screen_switch_padding_width"
+        android:paddingLeft="@dimen/help_screen_switch_padding_width"
+        android:paddingTop="@dimen/help_screen_switch_padding_height"
+        android:layout_below="@+id/switch_guide_main"
+        android:text="@string/guide_help_locations_screen_switch_text"
+        android:textSize="@dimen/help_screen_switch_text_size" />
+
+    <Switch
+        android:id="@+id/switch_guide_location"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingRight="@dimen/help_screen_switch_padding_width"
+        android:paddingLeft="@dimen/help_screen_switch_padding_width"
+        android:paddingTop="@dimen/help_screen_switch_padding_height"
+        android:layout_below="@+id/switch_guide_locations"
+        android:text="@string/guide_help_location_screen_switch_text"
+        android:textSize="@dimen/help_screen_switch_text_size" />
+
+</RelativeLayout>

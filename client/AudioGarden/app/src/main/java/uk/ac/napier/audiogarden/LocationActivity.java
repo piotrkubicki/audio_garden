@@ -1,21 +1,12 @@
 package uk.ac.napier.audiogarden;
 
-import android.Manifest;
 import android.animation.Animator;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
-import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothDevice;
-import android.bluetooth.BluetoothGatt;
-import android.bluetooth.BluetoothGattCallback;
-import android.bluetooth.BluetoothGattCharacteristic;
-import android.bluetooth.BluetoothGattService;
 import android.bluetooth.BluetoothManager;
-import android.bluetooth.BluetoothProfile;
 import android.bluetooth.le.BluetoothLeScanner;
 import android.bluetooth.le.ScanCallback;
-import android.bluetooth.le.ScanFilter;
 import android.bluetooth.le.ScanResult;
 import android.bluetooth.le.ScanSettings;
 import android.content.BroadcastReceiver;
@@ -24,30 +15,26 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.content.res.ColorStateList;
-import android.location.LocationManager;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
-import android.os.Build;
-import android.os.Handler;
-import android.os.ParcelUuid;
-import android.provider.MediaStore;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.github.amlcurran.showcaseview.ShowcaseView;
+import com.github.amlcurran.showcaseview.targets.Target;
+import com.github.amlcurran.showcaseview.targets.ViewTarget;
 import com.skyfishjy.library.RippleBackground;
 
 import org.json.JSONArray;
@@ -55,17 +42,14 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.nio.charset.Charset;
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class LocationActivity extends AppCompatActivity {
+public class LocationActivity extends AppCompatActivity implements View.OnClickListener {
 
     private FloatingActionButton pausePlayBtn, stopReplayBtn, resetLocBtn;
     private Location location;
@@ -86,8 +70,7 @@ public class LocationActivity extends AppCompatActivity {
     private Map<String, List<Double>> noiseFilter;  // stores distance samples of each valid device
     private String lastTrack = null;
 
-    private int voicePosition;
-    private int bgPosition;
+    private int voicePosition, bgPosition;
 
     private ImageView foundDevice;
     private ImageView scanning;
@@ -96,6 +79,9 @@ public class LocationActivity extends AppCompatActivity {
 
     private Intent serviceIntent;
     private BroadcastReceiver receiver;
+
+    private ShowcaseView showcaseGuide;
+    private int showcaseCounter;
 
     public enum AnimMode {
         FOUND, REPLAY, PAUSE, DESTROY, PLAY, NO_MORE_DEVICES
@@ -209,8 +195,97 @@ public class LocationActivity extends AppCompatActivity {
         });
         setLocation();
         setView();
-        checkBluetoothState(); // check if bluetooth available
-        playIntro(bgMP, Integer.toString(location.getId()));
+
+        // don't run if first use
+        if (!Constants.getUserGuideStatus(this, getString(R.string.user_guide_settings_location))) {
+            checkBluetoothState(); // check if bluetooth available
+            playIntro(bgMP, Integer.toString(location.getId()));
+        }
+
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+
+        if (Constants.getUserGuideStatus(this, getString(R.string.user_guide_settings_location))) {
+            showcaseGuide = new ShowcaseView.Builder(this)
+                    .setTarget(Target.NONE)
+                    .setContentTitle(R.string.guide_location_title)
+                    .setContentText(R.string.guide_location_text)
+                    .setStyle(R.style.ShowcaseStyleBlue)
+                    .setOnClickListener(this)
+                    .build();
+
+            showcaseGuide.setButtonText(getString(R.string.guide_next_btn));
+            showcaseCounter = Constants.getUserGuidePage(this, getString(R.string.user_guide_settings_location));
+
+            if (showcaseCounter > -1) {
+                Button btn = (Button) findViewById(R.id.showcase_button);
+                btn.performClick();
+            } else {
+                showcaseCounter++;
+            }
+        }
+    }
+
+    @Override
+    public void onClick(View view) {
+        //change guide button position
+        RelativeLayout.LayoutParams lps = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        lps.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+        lps.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
+        int margin = ((Number) (getResources().getDisplayMetrics().density * 12)).intValue();
+        lps.setMargins(margin, margin, margin, margin);
+
+        switch (showcaseCounter) {
+            case 0:
+                showcaseGuide.setTarget(new ViewTarget(R.id.foundDevice, this));
+                showcaseGuide.setContentTitle(getString(R.string.guide_location_scanner_status_indicator_title));
+                showcaseGuide.setContentText(getString(R.string.guide_location_scanner_status_indicator_text));
+
+                checkBluetoothState();
+                playIntro(bgMP, Integer.toString(location.getId()));
+                break;
+            case 1:
+                showcaseGuide.setTarget(new ViewTarget(R.id.stop_replay_btn, this));
+                showcaseGuide.setContentTitle(getString(R.string.guide_location_stop_replay_btn_title));
+                showcaseGuide.setContentText(getString(R.string.guide_location_stop_replay_btn_text));
+                break;
+            case 2:
+                showcaseGuide.setTarget(new ViewTarget(R.id.pause_play_btn, this));
+                showcaseGuide.setContentTitle(getString(R.string.guide_location_pause_start_btn_title));
+                showcaseGuide.setContentText(getString(R.string.guide_location_pause_start_btn_text));
+                break;
+            case 3:
+                showcaseGuide.setTarget(new ViewTarget(R.id.reset_loc_btn, this));
+                showcaseGuide.setContentTitle(getString(R.string.guide_location_reload_loc_btn_title));
+                showcaseGuide.setContentText(getString(R.string.guide_location_reload_loc_btn_text));
+                showcaseGuide.setButtonPosition(lps);
+                break;
+            case 4:
+                showcaseGuide.setTarget(Target.NONE);
+                showcaseGuide.setContentTitle(getString(R.string.guide_location_notification_bar_title));
+                showcaseGuide.setContentText(getString(R.string.guide_location_notification_bar_text));
+                showcaseGuide.setButtonText(getString(R.string.guide_close_btn));
+                lps.removeRule(RelativeLayout.ALIGN_PARENT_LEFT);
+                lps.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+                showcaseGuide.setButtonPosition(lps);
+                break;
+            case 5:
+                showcaseGuide.hide();
+                Constants.setUserGuideStatus(this, getString(R.string.user_guide_settings_location), false);
+                break;
+        }
+        showcaseCounter++;
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+
+        if (showcaseGuide != null) showcaseGuide.hide();
+        Constants.setUserGuidePage(this, getString(R.string.user_guide_settings_location), showcaseCounter);
     }
 
     @Override

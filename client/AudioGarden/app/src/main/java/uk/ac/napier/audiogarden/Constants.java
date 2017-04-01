@@ -1,8 +1,10 @@
 package uk.ac.napier.audiogarden;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.util.Log;
 
 /**
  * Created by Nathan on 30-Mar-17.
@@ -48,5 +50,34 @@ public class Constants {
         return bm;
     }
 
+    public static void setUserGuideStatus(Context context, String screenName, Boolean value) {
+        SharedPreferences prefs = context.getSharedPreferences(context.getString(R.string.user_guide_settings), Context.MODE_PRIVATE);
+
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putBoolean(screenName, value);
+        editor.commit();
+
+        setUserGuidePage(context, screenName, 0);
+    }
+
+    public static boolean getUserGuideStatus(Context context, String screenName) {
+        SharedPreferences prefs = context.getSharedPreferences(context.getString(R.string.user_guide_settings), Context.MODE_PRIVATE);
+
+        return prefs.getBoolean(screenName, true);
+    }
+
+    public static void setUserGuidePage(Context context, String screenName, int page) {
+        SharedPreferences prefs = context.getSharedPreferences(context.getString(R.string.user_guide_settings), Context.MODE_PRIVATE);
+
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putInt(screenName + "_page", page - 1);
+        editor.commit();
+    }
+
+    public static int getUserGuidePage(Context context, String screenName) {
+        SharedPreferences prefs = context.getSharedPreferences(context.getString(R.string.user_guide_settings), Context.MODE_PRIVATE);
+
+        return prefs.getInt(screenName + "_page", -1);
+    }
 
 }
