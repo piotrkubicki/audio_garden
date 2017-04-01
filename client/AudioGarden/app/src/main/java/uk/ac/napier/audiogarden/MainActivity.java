@@ -10,6 +10,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.RelativeLayout;
 
@@ -104,14 +105,24 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onClick(View view) {
+        RelativeLayout.LayoutParams lps = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        lps.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+        lps.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
+        int margin = ((Number) (getResources().getDisplayMetrics().density * 12)).intValue();
+        lps.setMargins(margin, margin, margin, margin);
+
         switch (showcaseCounter) {
             case 0: showcaseGuide.setTarget(new ViewTarget(R.id.helpImage, this));
                 showcaseGuide.setContentTitle(getString(R.string.guide_main_help_btn_title));
                 showcaseGuide.setContentText(getString(R.string.guide_main_help_btn_text));
+                showcaseGuide.setButtonPosition(lps);
                 break;
             case 1: showcaseGuide.setTarget(new ViewTarget(R.id.mapImage, this));
                 showcaseGuide.setContentTitle(getString(R.string.guide_main_map_btn_title));
                 showcaseGuide.setContentText(getString(R.string.guide_main_map_btn_text));
+                lps.removeRule(RelativeLayout.ALIGN_PARENT_LEFT);
+                lps.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+                showcaseGuide.setButtonPosition(lps);
                 break;
             case 2: showcaseGuide.setTarget(new ViewTarget(R.id.locationsImage, this));
                 showcaseGuide.setContentTitle(getString(R.string.guide_main_locations_btn_title));
