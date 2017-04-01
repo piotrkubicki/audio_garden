@@ -1,5 +1,4 @@
 <resources>
-
     <string name="app_name">BLE Beacon App</string>
     <string name="title_activity_location">Location</string>
     <string name="title_activity_locations">Locations</string>
@@ -8,6 +7,12 @@
     <string name="locations_storage">locations_pref</string>
     <string name="title_activity_help">Help</string>
     <string name="action_settings">Settings</string>
+
+    <!-- User guide settings -->
+    <string name="user_guide_settings">user_guide_settings</string>
+    <string name="user_guide_settings_main">user_guide_settings_main</string>
+    <string name="user_guide_settings_locations">user_guide_settings_locations</string>
+    <string name="user_guide_settings_location">user_guide_settings_location</string>
 
     <!-- Strings related to Main -->
 
@@ -22,18 +27,10 @@
 
 
     <!-- Strings related to Help -->
-
-    <string name="volumeHeader">Turn Up Device Volume</string>
-    <string name="volumeMain">Using the volume buttons on your device, turn the media volume to a comfortable level for listening to music.</string>
-
-    <string name="bluetoothHeader">Switch on Bluetooth</string>
-    <string name="bluetoothMain">In your device settings, turn on your devices Bluetooth. This allows the phone to communicate with the beacons in the garden. (Note that the app will attempt to activate your bluetooth automatically if it is off)</string>
-
-    <string name="beaconHeader">Find a beacon</string>
-    <string name="beaconMain">Go back to the main menu and select the map tab to find your way to one of the locations. Once you\'re there go to the locations tab and select where you are. The app will start playing music once a beacon has been scanned.</string>
-
-    <string name="stuckHeader">Still stuck?</string>
-    <string name="stuckMain">If you\'re still having trouble there could be something wrong with the app. Please send an email with details of the problem to \n40170722@live.napier.ac.uk</string>
+    <string name="guide_help_all_screens_switch_text">Switch all screens guide</string>
+    <string name="guide_help_main_screen_switch_text">Switch main screen guide</string>
+    <string name="guide_help_locations_screen_switch_text">Switch locations screens guide</string>
+    <string name="guide_help_location_screen_switch_text">Switch location screens guide</string>
 
     <!-- Strings related to Location -->
     <string name="strSearching">Searching for beacons&#8230;</string>
@@ -50,4 +47,39 @@
 
     <!-- Errors messeges -->
     <string name="server_error">Cannot connect with the server</string>
+
+    <!-- User guide -->
+    <string name="guide_main_welcome_title">Welcome!</string>
+    <string name="guide_main_welcome_text">This application let you to enjoy our interactive gardens on the way you experienced never before. I would like to invite you to take a tour
+        through application with me.</string>
+    <string name="guide_main_locations_btn_title">Locations button</string>
+    <string name="guide_main_locations_btn_text">Takes you to the next screen containg list of interactive places supported by this app.</string>
+    <string name="guide_main_map_btn_title">Map menu</string>
+    <string name="guide_main_map_btn_text">Map displaying locations of interactive places supported by this app.</string>
+    <string name="guide_main_help_btn_title">Help menu</string>
+    <string name="guide_main_help_btn_text">If you don\'t need this quide, please use Help section to turn if off. This menu will also allow you to rerun our guide again.
+        You can select all guide or sub guides for each screen independelly</string>
+
+    <string name="guide_locations_location_btn_title">Selecting location</string>
+    <string name="guide_locations_location_btn_text">In order to interact with garden you are currently in, please select its name from the list.</string>
+
+    <string name="guide_location_title">Location screen</string>
+    <string name="guide_location_text">This screen is used to interact with the garden. When you press next, application will start to play music and listen for
+        signals comming from transmitters located in this location. Next time all that will start automaticaly.</string>
+    <string name="guide_location_scanner_status_indicator_title">Scanner status</string>
+    <string name="guide_location_scanner_status_indicator_text">This object will show you current status os the scanner. It can present informations such as scanning, playing or paused.
+        It also tells you when you find all transmitters for selected location.</string>
+    <string name="guide_location_stop_replay_btn_title">Stop/Replay Button</string>
+    <string name="guide_location_stop_replay_btn_text">Use this button to stop current sounds or replay last track. Dark background indicates that button is currently disabled
+        and cannot be used</string>
+    <string name="guide_location_pause_start_btn_title">Pause/Start Button</string>
+    <string name="guide_location_pause_start_btn_text">Use this button to pause or start current sounds.</string>
+    <string name="guide_location_reload_loc_btn_title">Reload Button</string>
+    <string name="guide_location_reload_loc_btn_text">When scanner indicator show you that no more transmiters exists for this location, you can use this button to reset location
+        and use transmitters once again.</string>
+    <string name="guide_location_notification_bar_title">Locked screen controls</string>
+    <string name="guide_location_notification_bar_text">Same buttons can be found on the control bar displayed when application work in background or when device screen is locked.</string>
+
+    <string name="guide_next_btn">Next</string>
+    <string name="guide_close_btn">Close</string>
 </resources>

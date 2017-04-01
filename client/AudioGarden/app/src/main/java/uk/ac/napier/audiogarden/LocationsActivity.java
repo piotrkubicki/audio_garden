@@ -18,6 +18,10 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
+import com.github.amlcurran.showcaseview.ShowcaseView;
+import com.github.amlcurran.showcaseview.targets.Target;
+import com.github.amlcurran.showcaseview.targets.ViewTarget;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -34,7 +38,9 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.SortedSet;
 
-public class LocationsActivity extends AppCompatActivity {
+public class LocationsActivity extends AppCompatActivity implements View.OnClickListener {
+    private ShowcaseView showcaseGuide;
+    private int showcaseCounter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,6 +52,50 @@ public class LocationsActivity extends AppCompatActivity {
         {
             Toast.makeText(getApplicationContext(), "App requires location permissions, please enable these in settings", Toast.LENGTH_LONG).show();
         }
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+
+        if (Constants.getUserGuideStatus(this, getString(R.string.user_guide_settings_locations))) {
+            showcaseGuide = new ShowcaseView.Builder(this)
+                    .setTarget(Target.NONE)
+                    .setContentTitle(R.string.guide_locations_location_btn_title)
+                    .setContentText(R.string.guide_locations_location_btn_text)
+                    .setStyle(R.style.ShowcaseStyleBlue)
+                    .setOnClickListener(this)
+                    .build();
+
+            showcaseGuide.setButtonText(getString(R.string.guide_close_btn));
+            showcaseCounter = Constants.getUserGuidePage(this, getString(R.string.user_guide_settings_locations));
+
+            if (showcaseCounter > -1) {
+                Button btn = (Button) findViewById(R.id.showcase_button);
+                btn.performClick();
+            } else {
+                showcaseCounter++;
+            }
+        }
+
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+
+        if (showcaseGuide != null) showcaseGuide.hide();
+        Constants.setUserGuidePage(this, getString(R.string.user_guide_settings_locations), showcaseCounter);
+    }
+
+    @Override
+    public void onClick(View view) {
+        switch (showcaseCounter){
+            case 0: showcaseGuide.hide();
+                Constants.setUserGuideStatus(this, getString(R.string.user_guide_settings_locations), false);
+                break;
+        }
+        showcaseCounter++;
     }
 
     /**
@@ -95,7 +145,6 @@ public class LocationsActivity extends AppCompatActivity {
                 button.setLayoutParams(lParams);
                 button.setId(i + 1);
                 button.setBackgroundResource(R.drawable.buttonstyle);
-
                 rl.addView(button);
 
                 final int location_id = obj.getInt("location_id");
