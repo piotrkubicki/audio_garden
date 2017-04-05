@@ -1,0 +1,31 @@
+{% extends 'master.html' %}
+
+{% block content %}
+<div class="modal fade in" id="login-form" tabindex="-1" role="dialog">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">Sign in</h4>
+      </div><!-- modal-header -->
+      <div class="modal-body">
+        <form action="/admin/signin" method="POST" enctype="multipart/form-data">
+          <div class="form-group">
+            <label for="username" class="control-label">Username</label>
+            <input type="text" class="form-control" name="username" id="username" />
+          </div>
+          <div class="form-group">
+            <label for="password" class="control-label">Password</label>
+            <input type="password" class="form-control" name="password" id="password" />
+          </div>
+          <input type="submit" class="btn btn-success" value="Sign in" name="submit" />
+        </form>
+      </div><!-- modal-body -->
+    </div><!-- modal-content -->
+  </div><!-- modal-dialog -->
+</div><!-- login-form -->
+
+{% endblock %}
+
+{% block footer %}
+<script src="{{ url_for('static', filename='js/login_form.js') }}"></script>
+{% endblock %}
