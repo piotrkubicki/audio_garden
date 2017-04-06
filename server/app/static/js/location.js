@@ -50,8 +50,7 @@ $(document).ready(function() {
       url: '/admin/locations/' + location_id + '/transmitters/' + transmitter_id + '/delete',
       type: 'POST',
       success: function(result) {
-        $('#' + transmitter_id).closest('div').closest('li').prev('hr').remove()
-        $('#' + transmitter_id).closest('div').closest('li').remove();
+        window.location.href = '/admin/locations/' + location_id;
       }
     });
   });

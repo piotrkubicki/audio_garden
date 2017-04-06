@@ -117,8 +117,17 @@ def admin_edit_location(id):
         location = Location.query.get(id)
         return render_template('location_form.html', location=location)
 
-    location = Location(name=request.form['name'], longitude=request.form['longitude'], latitude=request.form['latitude'])
-    db.session.add(location)
+    location = Location.query.get(id)
+
+    if request.form['name'] != '':
+        location.name = request.form['name']
+
+    if request.form['latitude'] != '':
+        location.latitude = request.form['latitude']
+
+    if request.form['longitude'] != '':
+        location.longitude = request.form['longitude']
+
     db.session.commit()
 
     return redirect('/admin/locations')
@@ -172,4 +181,4 @@ def admin_delete_transmitter(id, transmitter_id):
 
     location = Location.query.get(id)
 
-    return render_template('location.html', location=location)
+    return redirect('/admin/locations/' + str(location.location_id))

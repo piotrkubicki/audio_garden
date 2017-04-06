@@ -15,6 +15,7 @@
 #locations-list li {
     border: 1px solid black;
     margin-bottom: 10px;
+    background-color: #aed581;
 }
 
 #locations-list .location-item {
