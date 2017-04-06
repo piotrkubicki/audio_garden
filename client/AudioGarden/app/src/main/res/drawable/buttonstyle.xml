@@ -3,8 +3,8 @@
 
     <item android:state_pressed="true">
         <shape>
-            <solid android:color="@color/blueAccent"/>
-            <stroke android:width="2px" android:color="@color/blue"/>
+            <solid android:color="@color/greenAccent"/>
+            <stroke android:width="2px" android:color="@color/greenAccent"/>
             <padding android:left="10dp" android:top="20dp" android:right="10dp"
                 android:bottom="20dp"/>
         </shape>
@@ -12,8 +12,8 @@
 
     <item>
         <shape>
-            <solid android:color="@color/blue"/>
-            <stroke android:width="2px" android:color="@color/blue"/>
+            <solid android:color="@color/green"/>
+            <stroke android:width="2px" android:color="@color/green"/>
             <padding android:left="10dp" android:top="20dp" android:right="10dp"
                 android:bottom="20dp"/>
         </shape>
