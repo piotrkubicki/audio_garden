@@ -1,1 +1,10 @@
-<div class="header"><div class="brand">Header</div><div class="right-panel"><a href="#" id="create-new-location-btn">New Location</a><a href='/admin/signout' id="logout-btn">Logout</a></div></div>
+<div class="header">
+  <div class="brand">Admin Panel</div>
+  <div class="right-panel">
+    {% if location is defined %}
+    <a href="/admin/locations">Locations</a>
+    {% endif %}
+    <a href="#" id="create-new-location-btn">New Location</a>
+    <a href='/admin/signout' id="logout-btn">Logout</a>
+  </div>
+</div>

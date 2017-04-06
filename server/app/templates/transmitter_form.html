@@ -5,7 +5,7 @@
           <h4 class="modal-title">{% if transmitter != None %} Edit transmitter {% else %} New transmitter {% endif %}</h4>
         </div><!-- modal-header -->
         <div class="modal-body">
-          <form action="/admin/locations/1/transmitters/{% if transmitter != None %}{{ transmitter.transmitter_id }}/edit{% else %}add{% endif %}" method="POST" enctype="multipart/form-data">
+          <form action="/admin/locations/{{ location_id }}/transmitters/{% if transmitter != None %}{{ transmitter.transmitter_id }}/edit{% else %}add{% endif %}" method="POST" enctype="multipart/form-data">
             <div class="form-group">
               <label for="transmitter_id" class="control-label">ID</label>
               <input type="text" class="form-control" name="transmitter_id" id="transmitter_id" value="{{ transmitter.transmitter_id }}" />

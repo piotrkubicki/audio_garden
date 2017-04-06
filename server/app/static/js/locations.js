@@ -1,8 +1,7 @@
 $(document).ready(function() {
-  $(document).on('click', '.x-icon', function(e) {
+  $(document).on('click', '.locations-delete-btn', function(e) {
     e.preventDefault();
-    location_id = $(this).data('location-id');
-    console.log('dsd');
-    window.location.href = '/admin/locations/' + location_id + '/delete';
+    $.post(this.href);
+    window.location.href = '/admin/locations';
   });
 });

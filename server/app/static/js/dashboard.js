@@ -1,7 +1,8 @@
 $(document).ready(function() {
   $(document).on('click', '#create-new-location-btn', function(e) {
     e.preventDefault();
-
+    $('#location-form').remove();
+    
     $.ajax({
       type: 'GET',
       url: '/admin/locations/add',

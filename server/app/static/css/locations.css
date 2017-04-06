@@ -1,8 +1,8 @@
 #locations-container {
-  height: 100vh;
+  height: 90vh;
   width: 100vw;
   overflow: auto;
-  padding: 20px;
+  padding-top: 20px;
 }
 
 #locations-list {
@@ -12,14 +12,18 @@
   text-align: center;
 }
 
+#locations-list li {
+    border: 1px solid black;
+    margin-bottom: 10px;
+}
+
 #locations-list .location-item {
-  display: block;
+  display: inline-block;
   color: black;
   font-size: 22px;
   padding: 15px;
-  margin-bottom: 10px;
   height: 60px;
-  border: 1px solid black;
+  width: 90%;
 }
 
 #locations-list .location-item:hover, #locations-list .location-item:link, #locations-list .location-item:visited,
@@ -27,11 +31,16 @@
   text-decoration: none;
 }
 
-#locations-list .location-item .x-icon {
+.locations-delete-btn {
+  display: inline-block;
+  font-size: 24px;
+}
+
+.locations-delete-btn .x-icon {
   float: right;
 }
 
-#locations-list .location-item .x-icon:hover {
+.locations-delete-btn .x-icon:hover {
   float: right;
   color: red;
 }
