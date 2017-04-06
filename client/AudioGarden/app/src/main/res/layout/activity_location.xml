@@ -15,7 +15,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/scanning"
-        app:rb_color="@color/blue"
+        app:rb_color="@color/greenAccent"
         app:rb_radius="24dp"
         app:rb_rippleAmount="1"
         app:rb_duration="4000"
