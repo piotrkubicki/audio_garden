@@ -64,8 +64,9 @@ def get_transmitter_voice_sound(location_id, transmitter_id):
 def admin_signin():
     username = request.form['username']
     password = request.form['password']
-    if helpers.authenticate(username, password):
-        return redirect('admin/locations')
+    helpers.authenticate(username, password)
+
+    return redirect('admin/locations')
 
 @application.route('/admin/signout', methods=['GET'])
 def admin_signout():

@@ -3,7 +3,7 @@ import shutil
 import bcrypt
 
 from app import db, User, Token, Transmitter, application
-from flask import render_template, session, redirect, url_for, request
+from flask import render_template, session, redirect, url_for, request, flash
 from functools import wraps
 from werkzeug.utils import secure_filename
 
@@ -11,8 +11,9 @@ def authenticate(username, password):
   if username == '':
     return False
   user = User.query.filter_by(username=username).first()
-  if user.pass_hash is None:
+  if user is None:
     return False
+
   if user.pass_hash== bcrypt.hashpw(password.encode('utf-8'), user.pass_hash.encode('utf-8')):
     session['username'] = username
     session['token'] = Token(application.config['tokens_location'], 'tokens').generate(username)
