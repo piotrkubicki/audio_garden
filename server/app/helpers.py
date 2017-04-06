@@ -16,10 +16,11 @@ def authenticate(username, password):
 
   if user.pass_hash== bcrypt.hashpw(password.encode('utf-8'), user.pass_hash.encode('utf-8')):
     session['username'] = username
-    session['token'] = Token(application.config['tokens_location'], 'tokens').generate(username)
+    session['token'] = Token('app/var/', 'tokens').generate(username)
 
     return True
   flash(u'Credentials don\'t match any record!', 'error')
+
 
   return False
 
@@ -30,13 +31,14 @@ def require_auth(f):
     if 'token' in session and 'username' in session:
       token = session['token']
       username = session['username']
+
     else:
       return render_template('login_form.html')
 
-    if not Token(application.config['tokens_location'], 'tokens').validate(username, token, 10):
-      return render_template('login_form.html')
+    if not Token('app/var/', 'tokens').validate(username, token, 10):
+        return render_template('login_form.html')
 
-    Token(application.config['tokens_location'], 'tokens').update(token)
+    Token('app/var/', 'tokens').update(token)
 
     return f(*args, **kwargs)
 
