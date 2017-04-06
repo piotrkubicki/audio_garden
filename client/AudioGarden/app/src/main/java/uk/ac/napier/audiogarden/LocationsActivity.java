@@ -141,6 +141,7 @@ public class LocationsActivity extends AppCompatActivity implements View.OnClick
                     lParams.addRule(RelativeLayout.BELOW, i);
                 }
                 lParams.addRule(RelativeLayout.CENTER_HORIZONTAL);
+                lParams.setMargins(0, 0, 0, 10);
 
                 button.setLayoutParams(lParams);
                 button.setId(i + 1);

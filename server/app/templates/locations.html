@@ -1,0 +1,25 @@
+{% extends 'master.html' %}
+
+{% block header %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}" />
+<link rel="stylesheet" href="{{ url_for('static', filename='css/locations.css') }}" />
+{% endblock %}
+
+{% block content %}
+{% include 'dashboard.html' %}
+<div id="locations-container">
+  <ul id="locations-list">
+    {% for location in locations %}
+    <li>
+      <a href="/admin/locations/{{ location.location_id }}" class="location-item" id="{{ location.location_id }}" data-location-id="{{ location.location_id }}">{{ location.name }}</a>
+      <a href="/admin/locations/{{ location.location_id }}/delete" class="locations-delete-btn"><i class="fa fa-times x-icon"></i></a>
+    </li>
+    {% endfor %}
+  </ul>
+</div>
+{% endblock %}
+
+{% block footer %}
+<script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+<script src="{{ url_for('static', filename='js/locations.js') }}"></script>
+{% endblock %}

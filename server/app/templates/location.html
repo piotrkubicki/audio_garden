@@ -1,0 +1,49 @@
+{% extends 'master.html' %}
+
+{% block header %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}" />
+<link rel="stylesheet" href="{{ url_for('static', filename='css/location.css') }}" />
+{% endblock %}
+
+{% block content %}
+{% include 'dashboard.html' %}
+<div id="location-container">
+  <input type="hidden" id="location_id-helper" data-location-id="{{ location.location_id }}" />
+  <div id="location-details">
+    <div style="float: left;">
+      <div><strong>Location id:</strong> {{ location.location_id }}</div>
+      <div><strong>Name:</strong> {{ location.name }}</div>
+      <div><strong>Coordinates:</strong> {{ location.latitude }} {{ location.longitude }}</div>
+      <div><strong>Transmitters:</strong></div>
+    </div>
+    <div class="buttons-panel" style="float: right; width: 210px">
+      <div class="btn btn-warning" id="location-edit-btn"><strong>EDIT</strong></div>
+      <form action="/admin/locations/{{ location.location_id }}/delete" method="POST" style="width: 100px; margin: 0; float: right;">
+        <button class="btn btn-danger" id="location-delete-btn"><strong>DELETE</strong></button>
+      </form>
+      <div class="btn btn-primary" id="new-transmitter-btn"><strong>ADD TRANSMITTTER</strong></div>
+    </div>
+    <div style="clear: both"></div>
+    <ul id="transmitters-list">
+      {% for transmitter in location.transmitters %}
+      <hr>
+      <li class="transmitters-list-item">
+        <div id="{{ transmitter.transmitter_id }}" style="float:left"><strong>ID: {{ transmitter.transmitter_id }}</strong><br>
+          <strong>Background track:</strong> {{ transmitter.background_track }}<br>
+          <strong>Voice track:</strong> {{ transmitter.voice_track }}
+        </div>
+        <div class="buttons-panel" style="float: right;">
+          <div class="btn btn-warning" id="transmitter-edit-btn" data-transmitter-id="{{ transmitter.transmitter_id }}"><strong>EDIT</strong></div>
+          <div class="btn btn-danger" id="transmitter-delete-btn" data-transmitter-id="{{ transmitter.transmitter_id }}"><strong>DELETE</strong></div>
+        </div>
+      </li>
+      {% endfor %}
+    </ul>
+  </div>
+</div>
+{% endblock %}
+
+{% block footer %}
+<script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+<script src="{{ url_for('static', filename='js/location.js') }}"></script>
+{% endblock %}

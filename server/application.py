@@ -8,8 +8,7 @@ def init(application):
     config = ConfigParser.ConfigParser()
 
     try:
-
-        config_location = 'app/var/development.cfg'                             # this dir and file is not included, change this to change configuration
+        config_location = 'app/var/configuration.cfg'                             # change this to change configuration
         config.read(config_location)
 
         # application config
@@ -22,6 +21,8 @@ def init(application):
         application.config['log_file'] = config.get('logging', 'file')
         application.config['log_location'] = config.get('logging', 'location')
         application.config['log_level'] = config.get('logging', 'level')
+
+        application.config['tokens_location'] = config.get('tokens', 'tokens_location')
     except:
         print 'Could not read config from: %s' % config_location
 

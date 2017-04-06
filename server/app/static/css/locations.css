@@ -1,0 +1,47 @@
+#locations-container {
+  height: 90vh;
+  width: 100vw;
+  overflow: auto;
+  padding-top: 20px;
+}
+
+#locations-list {
+  list-style: none;
+  margin: auto;
+  width: 40%;
+  text-align: center;
+}
+
+#locations-list li {
+    border: 1px solid black;
+    margin-bottom: 10px;
+    background-color: #aed581;
+}
+
+#locations-list .location-item {
+  display: inline-block;
+  color: black;
+  font-size: 22px;
+  padding: 15px;
+  height: 60px;
+  width: 90%;
+}
+
+#locations-list .location-item:hover, #locations-list .location-item:link, #locations-list .location-item:visited,
+#locations-list .location-item:active, #locations-list .location-item {
+  text-decoration: none;
+}
+
+.locations-delete-btn {
+  display: inline-block;
+  font-size: 24px;
+}
+
+.locations-delete-btn .x-icon {
+  float: right;
+}
+
+.locations-delete-btn .x-icon:hover {
+  float: right;
+  color: red;
+}
