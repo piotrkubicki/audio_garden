@@ -50,35 +50,36 @@
 
     <!-- User guide -->
     <string name="guide_main_welcome_title">Welcome!</string>
-    <string name="guide_main_welcome_text">This application let you to enjoy our interactive gardens on the way you experienced never before. I would like to invite you to take a tour
+    <string name="guide_main_welcome_text">This application lets you engage with our interactive gardens in a whole new way. I would like to invite you to take a tour
         through application with me.</string>
     <string name="guide_main_locations_btn_title">Locations button</string>
-    <string name="guide_main_locations_btn_text">Takes you to the next screen containg list of interactive places supported by this app.</string>
+    <string name="guide_main_locations_btn_text">The locations button takes you to the next screen, a list of interactive places supported by this app.</string>
     <string name="guide_main_map_btn_title">Map menu</string>
-    <string name="guide_main_map_btn_text">Map displaying locations of interactive places supported by this app.</string>
+    <string name="guide_main_map_btn_text">The map button displays the locations of all interactive places supported by this app.</string>
     <string name="guide_main_help_btn_title">Help menu</string>
-    <string name="guide_main_help_btn_text">If you don\'t need this quide, please use Help section to turn if off. This menu will also allow you to rerun our guide again.
-        You can select all guide or sub guides for each screen independelly</string>
+    <string name="guide_main_help_btn_text">If you don\'t need this guide, you can use the Help section to turn if off. This menu will also allow you to run the guide
+        again or select a specific part you\'d like to re-run.</string>
 
     <string name="guide_locations_location_btn_title">Selecting location</string>
-    <string name="guide_locations_location_btn_text">In order to interact with garden you are currently in, please select its name from the list.</string>
+    <string name="guide_locations_location_btn_text">In order to interact with the location you are currently in, please select its name from the list.</string>
 
     <string name="guide_location_title">Location screen</string>
-    <string name="guide_location_text">This screen is used to interact with the garden. When you press next, application will start to play music and listen for
-        signals comming from transmitters located in this location. Next time all that will start automaticaly.</string>
+    <string name="guide_location_text">This screen is used to interact with the location. When you press next, the application will start to play music and listen for
+        signals coming from transmitters located throughout this location.</string>
     <string name="guide_location_scanner_status_indicator_title">Scanner status</string>
-    <string name="guide_location_scanner_status_indicator_text">This object will show you current status os the scanner. It can present informations such as scanning, playing or paused.
-        It also tells you when you find all transmitters for selected location.</string>
+    <string name="guide_location_scanner_status_indicator_text">This object will show you the current status of the scanner. It will tell you when the app is scanning or whether music is playing or paused.
+        It also tells you when you have found all of the transmitters for your current location.</string>
     <string name="guide_location_stop_replay_btn_title">Stop/Replay Button</string>
-    <string name="guide_location_stop_replay_btn_text">Use this button to stop current sounds or replay last track. Dark background indicates that button is currently disabled
-        and cannot be used</string>
+    <string name="guide_location_stop_replay_btn_text">Use this button to stop current sounds or replay last track. A dark background indicates that button is currently disabled
+        and cannot be used. A blue background means the button is enabled.</string>
     <string name="guide_location_pause_start_btn_title">Pause/Start Button</string>
-    <string name="guide_location_pause_start_btn_text">Use this button to pause or start current sounds.</string>
+    <string name="guide_location_pause_start_btn_text">Use this button to pause or play the current sound.</string>
     <string name="guide_location_reload_loc_btn_title">Reload Button</string>
-    <string name="guide_location_reload_loc_btn_text">When scanner indicator show you that no more transmiters exists for this location, you can use this button to reset location
-        and use transmitters once again.</string>
-    <string name="guide_location_notification_bar_title">Locked screen controls</string>
-    <string name="guide_location_notification_bar_text">Same buttons can be found on the control bar displayed when application work in background or when device screen is locked.</string>
+    <string name="guide_location_reload_loc_btn_text">When the scanner indicates that there are no more transmitters to scan in this location, you can use this button to reset the app
+        and go around the location once again.</string>
+    <string name="guide_location_notification_bar_title">Lock screen controls</string>
+    <string name="guide_location_notification_bar_text">These same controls can be found in the notification bar and are displayed if you pull your notification bar down,
+        when the application is running in the background or when the device is locked.</string>
 
     <string name="guide_next_btn">Next</string>
     <string name="guide_close_btn">Close</string>

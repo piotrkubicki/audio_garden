@@ -20,7 +20,7 @@
         <RelativeLayout
             android:id="@+id/btnGarden"
             android:clickable="true"
-            android:background="@color/blue"
+            android:background="@color/green"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
@@ -55,14 +55,13 @@
         <RelativeLayout
             android:id="@+id/btnMap"
             android:clickable="true"
-            android:background="@color/orange"
+            android:background="@color/brown"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:gravity="center">
             <ImageView
                 android:id="@+id/mapImage"
-                android:contentDescription=""
                 android:src="@drawable/ic_map"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -81,7 +80,7 @@
         <RelativeLayout
             android:id="@+id/btnHelp"
             android:clickable="true"
-            android:background="@color/yellow"
+            android:background="@color/redBrown"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
