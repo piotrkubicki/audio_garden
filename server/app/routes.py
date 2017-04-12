@@ -103,7 +103,7 @@ def admin_add_location():
         db.session.add(location)
         db.session.commit()
 
-        newpath = r'app/static/audio/' +  str(location.location_id)
+        newpath = 'app/static/audio/' +  str(location.location_id)
 
         if not os.path.exists(newpath):
             os.makedirs(newpath)
@@ -120,16 +120,22 @@ def admin_edit_location(id):
 
     location = Location.query.get(id)
 
-    if request.form['name'] != '':
-        location.name = request.form['name']
+    if location != None:
+        if request.form['name'] != '':
+            location.name = request.form['name']
 
-    if request.form['latitude'] != '':
-        location.latitude = request.form['latitude']
+        if request.form['latitude'] != '':
+            location.latitude = request.form['latitude']
 
-    if request.form['longitude'] != '':
-        location.longitude = request.form['longitude']
+        if request.form['longitude'] != '':
+            location.longitude = request.form['longitude']
 
-    db.session.commit()
+        if request.files['intro'] != '':
+            path = 'app/static/audio/' + str(location.location_id) + '/'
+            intro_sound = request.files['intro']
+            intro_sound.save(os.path.join(path, 'intro_' + str(location.location_id) + '.mp3'))
+
+        db.session.commit()
 
     return redirect('/admin/locations')
 

@@ -21,7 +21,6 @@ def authenticate(username, password):
     return True
   flash(u'Credentials don\'t match any record!', 'error')
 
-
   return False
 
 def require_auth(f):
