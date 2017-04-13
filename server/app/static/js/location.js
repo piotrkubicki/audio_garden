@@ -27,6 +27,10 @@ $(document).ready(function() {
     e.preventDefault();
   });
 
+  $(document).on('click', 'input[type="submit"]', function() {
+    $('body').append('<div class="spinner-overlay"><div class="spinner"></div>');
+  });
+
   $(document).on('click', '#transmitter-edit-btn', function(e) {
     $('#transmitter-form').remove();
     $('body').append('<div class="spinner-overlay"><div class="spinner"></div>');
