@@ -38,18 +38,6 @@ public class Constants {
         public static int FOREGROUND_SERVICE = 101;
     }
 
-    public static Bitmap getDefaultAlbumArt(Context context) {
-        Bitmap bm = null;
-        BitmapFactory.Options options = new BitmapFactory.Options();
-        try {
-            bm = BitmapFactory.decodeResource(context.getResources(),
-                    R.mipmap.napier_logo, options);
-        } catch (Error ee) {
-        } catch (Exception e) {
-        }
-        return bm;
-    }
-
     public static void setUserGuideStatus(Context context, String screenName, Boolean value) {
         SharedPreferences prefs = context.getSharedPreferences(context.getString(R.string.user_guide_settings), Context.MODE_PRIVATE);
 
