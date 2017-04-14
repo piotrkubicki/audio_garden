@@ -64,7 +64,7 @@ public class LocationActivity extends AppCompatActivity implements View.OnClickL
     private final int FADE_INTERVAL = 250;
     private final int MAX_VOLUME = 1;
     private float volume = 0;
-    private Double maxDistance = -65.0;             // distance read that trigger server audio stream requests
+    private Double maxDistance = 0.0;         // distance read that trigger server audio stream requests
 
     private List<String> scanFilters;               // list of valid devices
     private Map<String, List<Double>> noiseFilter;  // stores distance samples of each valid device
@@ -99,6 +99,8 @@ public class LocationActivity extends AppCompatActivity implements View.OnClickL
 
         setupReceiver();
         startService();
+
+        maxDistance = Double.parseDouble(getString(R.string.max_distance));
 
         bgMP= new MediaPlayer();
         vMP = new MediaPlayer();
@@ -715,7 +717,6 @@ public class LocationActivity extends AppCompatActivity implements View.OnClickL
         playBtn.setImageDrawable(getDrawable(R.drawable.ic_play_arrow_black_52dp));
         FloatingActionButton resumeBtn = (FloatingActionButton) findViewById(R.id.stop_replay_btn);
         resumeBtn.setImageDrawable(getDrawable(R.drawable.ic_replay_black_52dp));
-
 
         serviceIntent = new Intent(LocationActivity.this, NotificationService.class);
         serviceIntent.setAction(Constants.ACTION.SEND_PAUSE_ACTION);
