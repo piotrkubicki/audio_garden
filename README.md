@@ -1,5 +1,9 @@
 # Audio Garden Project
- 
+This project has been created as part of Group Project for Napier University.
+Purpose of this project is to develop mobile app to provide audio experience for garden visitors. App use bluetooth to listen for signals from Low Energy Bluetooth Beacons
+located within garden area and play music based on signal received. To support mobile app, additional web app has been created. Web app provide sound content by stream of
+requested sounds via interned connection. Web app can be also used to manage app content by change of sounds allocated to the signal and add/remove beacons signals.
+
 #### How to run the server
 Install python pip
 ```sh
